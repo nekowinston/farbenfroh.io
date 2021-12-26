@@ -1,5 +1,5 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
+import type { NextPage } from "next";
+import Head from "next/head";
 
 const Home: NextPage = () => {
   return (
@@ -9,11 +9,9 @@ const Home: NextPage = () => {
         <meta name="description" content="colorscheme all the things" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className="text-3xl font-bold underline">
-        coming soon
-      </h1>
+      <h1 className="text-3xl font-bold underline">coming soon</h1>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
