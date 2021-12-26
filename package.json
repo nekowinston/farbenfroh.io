@@ -12,24 +12,33 @@
   "dependencies": {
     "next": "12.0.7",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
-    "@types/node": "17.0.5",
-    "@types/react": "17.0.38",
-    "autoprefixer": "^10.4.0",
+    "babel-plugin-macros": "^3.1.0",
     "eslint": "8.5.0",
     "eslint-config-next": "12.0.7",
     "eslint-config-prettier": "^8.3.0",
     "husky": ">=6",
     "lint-staged": ">=10",
-    "postcss": "^8.4.5",
     "prettier": "2.5.1",
-    "tailwindcss": "^3.0.7",
-    "typescript": "4.5.4"
+    "tailwindcss": "^2.2.16",
+    "twin.macro": "^2.8.2"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
+  },
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
   }
 }
