@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import tw, { styled } from 'twin.macro'
 import { keyframes } from 'styled-components'
+import { Github } from 'styled-icons/fa-brands'
 
 const animation = keyframes`
   0% { background-position: 0 74%; }
@@ -16,9 +17,8 @@ const Container = styled.div`
 `
 
 const Logo = styled.h1`
-  ${tw`text-6xl text-gray-800 lg:text-8xl p-8`};
-  font-family: 'Pushster', cursive;
-  color: transparent;
+  ${tw`p-8 text-transparent text-6xl lg:text-8xl`};
+  font-family: 'Pushster';
   background: linear-gradient(
     270deg,
     hsl(206, 100%, 20%),
@@ -43,8 +43,17 @@ const Home = () => {
         <div tw="text-center my-4">
           <p tw="text-gray-700 text-lg">/ˈfarbənfroː/</p>
           <p tw="text-gray-700 text-xs">[adjective]</p>
-          <p tw="text-gray-900 text-xl">full of colour</p>
+          <p tw="text-gray-900 text-xl font-bold">full of colour</p>
         </div>
+        <a href="https://github.com/farbenfroh">
+          <Github tw="h-12 w-12" />
+        </a>
+        <p tw="absolute bottom-0 m-2 opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
+          a project by{' '}
+          <a href="https://github.com/nekowinston" tw="text-blue-800">
+            winston
+          </a>
+        </p>
       </Container>
     </>
   )
