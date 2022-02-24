@@ -1,7 +1,36 @@
 import Head from 'next/head'
-import tw, { styled } from 'twin.macro'
+import styled from 'styled-components'
+import tw from 'tailwind-styled-components'
 import { keyframes } from 'styled-components'
 import { Github } from 'styled-icons/fa-brands'
+
+const Home = () => {
+  return (
+    <>
+      <Head>
+        <title>farbenfroh.io</title>
+        <meta name="description" content="colorscheme all the things" />
+      </Head>
+      <Container>
+        <Logo>farbenfroh.io</Logo>
+        <div className="my-4 text-center">
+          <p className="text-lg text-gray-700">/ˈfarbənfroː/</p>
+          <p className="text-xs text-gray-700">[adjective]</p>
+          <p className="text-xl font-bold text-gray-900">full of colour</p>
+        </div>
+        <a href="https://github.com/farbenfroh">
+          <Github className="h-12 w-12" />
+        </a>
+        <p className="absolute bottom-0 m-2 opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
+          a project by{' '}
+          <a href="https://github.com/nekowinston" className="text-blue-800">
+            winston
+          </a>
+        </p>
+      </Container>
+    </>
+  )
+}
 
 const animation = keyframes`
   0% { background-position: 0 74%; }
@@ -9,16 +38,20 @@ const animation = keyframes`
   100% { background-position: 0 74%; }
 `
 
-const Container = styled.div`
-  ${tw`flex flex-col items-center justify-center h-screen`};
+const Container = tw(styled.div`
   animation: ${animation} 30s ease infinite;
   background: linear-gradient(270deg, #45dce4, #bd85ea, #ea858d);
   background-size: 600% 600%;
+`)`
+  flex 
+  flex-col
+  items-center
+  justify-center
+  h-screen
 `
 
-const Logo = styled.h1`
-  ${tw`p-8 text-transparent text-6xl lg:text-8xl`};
-  font-family: 'Pushster';
+const Logo = tw(styled.h1`
+  font-family: 'Pushster', cursive;
   background: linear-gradient(
     270deg,
     hsl(206, 100%, 20%),
@@ -27,36 +60,13 @@ const Logo = styled.h1`
   );
   background-size: 600% 600%;
   background-clip: text;
+  -webkit-background-clip: text;
   animation: ${animation} 30s ease infinite;
+`)`
+  p-8
+  text-transparent
+  text-6xl
+  lg:text-8xl
 `
-
-const Home = () => {
-  return (
-    <>
-      <Head>
-        <title>coming soon.</title>
-        <meta name="description" content="colorscheme all the things" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Container>
-        <Logo>farbenfroh.io</Logo>
-        <div tw="text-center my-4">
-          <p tw="text-gray-700 text-lg">/ˈfarbənfroː/</p>
-          <p tw="text-gray-700 text-xs">[adjective]</p>
-          <p tw="text-gray-900 text-xl font-bold">full of colour</p>
-        </div>
-        <a href="https://github.com/farbenfroh">
-          <Github tw="h-12 w-12" />
-        </a>
-        <p tw="absolute bottom-0 m-2 opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
-          a project by{' '}
-          <a href="https://github.com/nekowinston" tw="text-blue-800">
-            winston
-          </a>
-        </p>
-      </Container>
-    </>
-  )
-}
 
 export default Home
