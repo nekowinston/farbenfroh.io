@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { keyframes } from 'styled-components'
@@ -18,15 +19,22 @@ const Home = () => {
           <p className="text-xs text-gray-700">[adjective]</p>
           <p className="text-xl font-bold text-gray-900">full of colour</p>
         </div>
-        <a href="https://github.com/farbenfroh">
-          <Github className="h-12 w-12" />
-        </a>
-        <p className="absolute bottom-0 m-2 opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
+        <div className="text-2xl">
+          <span>
+            Check out my new app,{' '}
+            <Link href="faerber">
+              <a className="relative inline-block before:absolute before:-inset-1 before:block before:skew-y-2 before:bg-gradient-to-r before:from-pink-500 before:to-violet-400">
+                <span className="relative text-white">faerber!</span>
+              </a>
+            </Link>
+          </span>
+        </div>
+        <div className="absolute bottom-0 m-2 w-full text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
           a project by{' '}
           <a href="https://github.com/nekowinston" className="text-blue-800">
-            winston
+            winston 🤘
           </a>
-        </p>
+        </div>
       </Container>
     </>
   )
