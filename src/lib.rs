@@ -1,5 +1,5 @@
 use deltae::*;
-use image::{GenericImage, GenericImageView};
+use image::{ImageBuffer, Pixel, RgbaImage};
 use lab::Lab;
 use std::io::Cursor;
 use wasm_bindgen::prelude::*;
@@ -31,8 +31,14 @@ impl From<MyLab> for LabValue {
 impl<D: Delta + Copy> DeltaEq<D> for MyLab {}
 
 #[wasm_bindgen]
-pub fn process(buffer: &[u8], method: String, palette: &[u8]) -> Vec<u8> {
-    let img = image::load_from_memory(buffer).unwrap();
+pub fn process(
+    buffer: Vec<u8>,
+    width: u32,
+    height: u32,
+    method: String,
+    palette: &[u8],
+) -> Vec<u8> {
+    let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
 
     let convert_method: DEMethod;
     if method == "76" {
@@ -58,8 +64,12 @@ pub fn process(buffer: &[u8], method: String, palette: &[u8]) -> Vec<u8> {
     // map the colors of the image to the LAB space
     let img_pixels = img.pixels();
     let img_labs = img_pixels.map(|pixel| {
-        let rgba = [pixel.2[0], pixel.2[1], pixel.2[2], pixel.2[3]];
-        return Lab::from_rgba(&rgba);
+        let rgb = [
+            pixel.channels()[0],
+            pixel.channels()[1],
+            pixel.channels()[2],
+        ];
+        return Lab::from_rgb(&rgb);
     });
 
     let mut img_new = img.clone();
