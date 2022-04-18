@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:wasm": "wasm-pack build --no-typescript",
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
