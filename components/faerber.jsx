@@ -2,7 +2,7 @@ import { Arrow90degUp } from '@styled-icons/bootstrap/Arrow90degUp'
 import { Trash } from '@styled-icons/octicons/Trash'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
-import OctoCatPride from './octocat-pride'
+import Octocat from './Octocat'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
 import { process } from '../pkg'
@@ -81,7 +81,11 @@ const Faerber = () => {
         <title>farbenfroh.io :: faerber</title>
       </Head>
       <div className="h-full bg-slate-800 text-gray-100">
-        <OctoCatPride catColor="#1e293b" />
+        <Octocat
+          catColor="#1e293b"
+          isPride={true}
+          repository="farbenfroh/farbenfroh.io"
+        />
         <div className="pt-8 text-center md:p-0">
           <h1 className="bg-gradient-to-r from-pink-500 to-violet-400 bg-clip-text p-4 font-lobster text-8xl text-transparent">
             faerber
