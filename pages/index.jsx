@@ -51,7 +51,7 @@ const Container = tw(styled.div`
 `
 
 const Logo = tw(styled.h1`
-  font-family: 'Pushster', cursive;
+  font-family: 'Lobster', cursive;
   background: linear-gradient(
     270deg,
     hsl(206, 100%, 20%),

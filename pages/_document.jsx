@@ -33,7 +33,7 @@ export default class MyDocument extends Document {
             crossOrigin="true"
           />
           <link
-            href="https://fonts.googleapis.com/css2?family=Pushster&display=swap"
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Lobster&family=Oswald&display=swap"
             rel="stylesheet"
           />
         </Head>

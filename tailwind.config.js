@@ -4,7 +4,13 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        lobster: ['Lobster', 'cursive'],
+        sans: ['Oswald', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
+    },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 }
