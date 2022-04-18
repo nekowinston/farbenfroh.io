@@ -1,8 +1,9 @@
 use deltae::*;
-use image::{ImageBuffer, Pixel, RgbaImage};
+use image::{EncodableLayout, ImageBuffer, Pixel, RgbaImage};
 use lab::Lab;
-use std::io::Cursor;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::{Clamped, JsCast};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
 #[wasm_bindgen]
 extern "C" {
@@ -37,7 +38,8 @@ pub fn process(
     height: u32,
     method: String,
     palette: &[u8],
-) -> Vec<u8> {
+    target_canvas: String,
+) {
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
 
     let convert_method: DEMethod;
@@ -72,11 +74,27 @@ pub fn process(
         return Lab::from_rgb(&rgb);
     });
 
-    let mut img_new = img.clone();
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas = document.get_element_by_id(&target_canvas).unwrap();
+    let canvas: web_sys::HtmlCanvasElement = canvas
+        .dyn_into::<HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
+
+    canvas.set_width(width);
+    canvas.set_height(height);
+
+    let context = canvas
+        .get_context("2d")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<CanvasRenderingContext2d>()
+        .unwrap();
 
     let iter_colors = labs.clone();
+    let mut buffer_data = vec![];
 
-    for (i, lab) in img_labs.enumerate() {
+    for lab in img_labs {
         let labv = LabValue {
             a: lab.a,
             b: lab.b,
@@ -112,16 +130,14 @@ pub fn process(
             l: closest_color.l,
         };
         let rgb = lab.to_rgb();
-
-        // write the new pixel to the image
-        let new_pixel = image::Rgba([rgb[0] as u8, rgb[1] as u8, rgb[2] as u8, 255]);
-        let row = i as u32 / img.dimensions().0;
-        let col = i as u32 % img.dimensions().0;
-        img_new.put_pixel(col, row, new_pixel);
+        // push flattened rgb to buffer
+        buffer_data.push(rgb[0]);
+        buffer_data.push(rgb[1]);
+        buffer_data.push(rgb[2]);
+        buffer_data.push(255);
     }
-    let mut buf: Vec<u8> = vec![];
-    img_new
-        .write_to(&mut Cursor::new(&mut buf), image::ImageOutputFormat::Png)
-        .unwrap();
-    return buf;
+
+    let data = buffer_data.as_bytes();
+    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(data), width, height).unwrap();
+    context.put_image_data(&data, 0 as f64, 0 as f64).unwrap();
 }

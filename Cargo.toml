@@ -15,3 +15,14 @@ crate-type = ["cdylib"]
 [profile.release]
 lto = true
 opt-level= 's'
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+    'Window',
+    'Document',
+    'Element',
+    'HtmlCanvasElement',
+    'CanvasRenderingContext2d',
+    'ImageData'
+]
