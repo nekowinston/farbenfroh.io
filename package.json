@@ -29,6 +29,12 @@
     "tailwind-styled-components": "^2.1.4",
     "tailwindcss": "^3.0.23"
   },
+  "eslintConfig": {
+    "extends": [
+      "next/core-web-vitals",
+      "prettier"
+    ]
+  },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
