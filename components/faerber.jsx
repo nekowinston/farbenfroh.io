@@ -1,11 +1,15 @@
 import { Arrow90degUp } from '@styled-icons/bootstrap/Arrow90degUp'
-import { Trash } from '@styled-icons/octicons/Trash'
+import { Download, Trash, Upload } from '@styled-icons/octicons'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
-import Octocat from './Octocat'
+import tw from 'tailwind-styled-components'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
 import { process } from '../pkg'
+
+const Button = tw.button`
+m-2 inline-block rounded bg-slate-500 p-2
+`
 
 const Faerber = () => {
   const previewImgRef = useRef()
@@ -33,6 +37,16 @@ const Faerber = () => {
       readerAB.onloadend = () => {
         setBuffer(readerAB.result)
       }
+    }
+  }
+
+  const downloadResult = () => {
+    if (resultImgRef.current.src) {
+      const a = document.createElement('a')
+      a.href = resultImgRef.current.src
+      a.download = 'faerber.png'
+      a.click()
+      a.remove()
     }
   }
 
@@ -81,11 +95,6 @@ const Faerber = () => {
         <title>farbenfroh.io :: faerber</title>
       </Head>
       <div className="h-full bg-slate-800 text-gray-100">
-        <Octocat
-          catColor="#1e293b"
-          isPride={true}
-          repository="farbenfroh/farbenfroh.io"
-        />
         <div className="pt-8 text-center md:p-0">
           <h1 className="bg-gradient-to-r from-pink-500 to-violet-400 bg-clip-text p-4 font-lobster text-8xl text-transparent">
             faerber
@@ -100,60 +109,43 @@ const Faerber = () => {
           </p>
         </div>
         <div className="py-4 text-center">
-          <input
-            type="file"
-            accept="image/png,image/webp"
-            name="inputImage"
-            onChange={(e) => loadImage(e)}
-          />
+          <Button $as="label" htmlFor="inputImage">
+            <input
+              type="file"
+              accept="image/png,image/webp"
+              name="inputImage"
+              id="inputImage"
+              className="sr-only"
+              onChange={(e) => loadImage(e)}
+            />
+            <Upload className="h-5 w-5" />
+            Upload
+          </Button>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-            padding: '1rem',
-          }}
-        >
-          <div
-            style={{
-              height: '600px',
-              width: '600px',
-              background: '#0b0d0f',
-              overflow: 'hidden',
-              border: '2px solid #544158',
-              borderRadius: '2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+        <div className="flex justify-center gap-1 p-2">
+          <div className="relative flex h-72 w-72 items-center justify-center overflow-hidden rounded-2xl border border-purple-900/60 bg-gray-800">
             <img
               ref={previewImgRef}
               alt={'preview'}
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              className="absolute h-full w-full object-contain"
             />
           </div>
-          <div
-            style={{
-              height: '600px',
-              width: '600px',
-              background: '#0b0d0f',
-              overflow: 'hidden',
-              border: '2px solid #544158',
-              borderRadius: '2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+          <div className="relative flex h-72 w-72 items-center justify-center overflow-hidden rounded-2xl border border-purple-900/60 bg-gray-800">
             <img
               ref={resultImgRef}
               alt={'result'}
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              className="absolute h-full w-full object-contain"
             />
           </div>
         </div>
+        {resultImgRef.current?.src !== undefined && (
+          <div className="py-4 text-center">
+            <Button onClick={() => downloadResult()}>
+              <Download className="h-5 w-5"></Download>
+              <span>Download</span>
+            </Button>
+          </div>
+        )}
         <div>
           <div className="mx-auto max-w-xl ">
             <h3 className="mx-auto max-w-fit rounded-t-lg border border-b-0 border-slate-500 bg-slate-700 px-4 text-center text-xl">
