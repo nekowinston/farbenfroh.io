@@ -13,6 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo install wasm-pack
+
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
@@ -20,11 +26,12 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+      - run: yarn build:wasm
       - run: yarn build
       - run: yarn export
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3.7.3
+        uses: peaceiris/actions-gh-pages@v3.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
