@@ -12,42 +12,64 @@ m-2 inline-block rounded bg-slate-500 p-2
 `
 
 const Faerber = () => {
-  const previewImgRef = useRef()
-  const resultImgRef = useRef()
+  const previewCanvasRef = useRef()
+  const resultCanvasRef = useRef()
   const customColorRef = useRef()
   const [selColors, setSelColors] = useState(colorSchemePresets['Dracula'])
   const [selMethod, setSelMethod] = useState('76')
-  // the input image to process, as an ArrayBuffer
   const [buffer, setBuffer] = useState(null)
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
+  const [downloadable, setDownloadable] = useState(false)
 
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e) => {
+    // clear the previous canvas & reset the buffer state
+    previewCanvasRef.current
+      .getContext('2d')
+      .clearRect(0, 0, imageSize.width, imageSize.height)
+    setBuffer(null)
+
     const file = e.target.files[0]
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = () => {
-      previewImgRef.current.src = reader.result
-    }
 
-    // when the preview is set, run the process
     reader.onloadend = () => {
-      // new reader to read an arrayBlob into
-      const readerAB = new FileReader()
-      readerAB.readAsArrayBuffer(file)
-      readerAB.onloadend = () => {
-        setBuffer(readerAB.result)
+      const img = new Image()
+      img.src = reader.result
+      img.onload = () => {
+        // create an ImageData object
+        const canvas = previewCanvasRef.current
+        const ctx = canvas.getContext('2d')
+        const imgData = ctx.createImageData(img.width, img.height)
+        canvas.width = img.width
+        canvas.height = img.height
+        setImageSize({ width: img.width, height: img.height })
+        // copy the image contents to the ImageData object
+        ctx.drawImage(img, 0, 0)
+        const pix = ctx.getImageData(0, 0, img.width, img.height).data
+        for (let i = 0; i < pix.length; i += 4) {
+          imgData.data[i] = pix[i]
+          imgData.data[i + 1] = pix[i + 1]
+          imgData.data[i + 2] = pix[i + 2]
+          imgData.data[i + 3] = 255
+        }
+        // set the ImageData object to the canvas
+        ctx.putImageData(imgData, 0, 0)
+        setBuffer(imgData.data)
       }
     }
   }
 
   const downloadResult = () => {
-    if (resultImgRef.current.src) {
-      const a = document.createElement('a')
-      a.href = resultImgRef.current.src
-      a.download = 'faerber.png'
-      a.click()
-      a.remove()
-    }
+    resultCanvasRef.current.getContext('2d').canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'result.png'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    })
   }
 
   const addCustomColor = () => {
@@ -73,21 +95,20 @@ const Faerber = () => {
 
     if (buffer) {
       // convert to Uint8Array, to pass it on to webassembly
-      const data = new Uint8Array(buffer)
       // get the converted colorscheme
       const colorscheme = getColorscheme()
       // call webassembly
-      const res = process(data, selMethod, colorscheme)
-
-      // convert the result to a blob
-      const blob = new Blob([res], { type: 'image/png' })
-      const readerResult = new FileReader()
-      readerResult.readAsDataURL(blob)
-      readerResult.onloadend = () => {
-        resultImgRef.current.src = readerResult.result
-      }
+      process(
+        buffer,
+        imageSize.width,
+        imageSize.height,
+        selMethod,
+        colorscheme,
+        'resultCanvas'
+      )
+      setDownloadable(true)
     }
-  }, [buffer, selMethod, selColors])
+  }, [buffer, selMethod, selColors, imageSize.width, imageSize.height])
 
   return (
     <>
@@ -112,7 +133,7 @@ const Faerber = () => {
           <Button $as="label" htmlFor="inputImage">
             <input
               type="file"
-              accept="image/png,image/webp"
+              accept="image/png,image/webp,image/jpeg"
               name="inputImage"
               id="inputImage"
               className="sr-only"
@@ -122,23 +143,22 @@ const Faerber = () => {
             Upload
           </Button>
         </div>
-        <div className="flex justify-center gap-1 p-2">
-          <div className="relative flex h-72 w-72 items-center justify-center overflow-hidden rounded-2xl border border-purple-900/60 bg-gray-800">
-            <img
-              ref={previewImgRef}
-              alt={'preview'}
-              className="absolute h-full w-full object-contain"
-            />
+        <div className="flex flex-col items-center justify-center gap-1 p-2 lg:flex-row">
+          <div className="flex aspect-video w-full items-center justify-center border border-gray-600 bg-gray-800 p-4">
+            <canvas
+              ref={previewCanvasRef}
+              className="max-h-full max-w-full"
+            ></canvas>
           </div>
-          <div className="relative flex h-72 w-72 items-center justify-center overflow-hidden rounded-2xl border border-purple-900/60 bg-gray-800">
-            <img
-              ref={resultImgRef}
-              alt={'result'}
-              className="absolute h-full w-full object-contain"
-            />
+          <div className="flex aspect-video w-full items-center justify-center border border-gray-600 bg-gray-800 p-4">
+            <canvas
+              id="resultCanvas"
+              ref={resultCanvasRef}
+              className="max-h-full max-w-full"
+            ></canvas>
           </div>
         </div>
-        {resultImgRef.current?.src !== undefined && (
+        {downloadable && (
           <div className="py-4 text-center">
             <Button onClick={() => downloadResult()}>
               <Download className="h-5 w-5"></Download>
@@ -217,6 +237,21 @@ const Faerber = () => {
                     </button>
                   ))}
                 </div>
+                <div className="mt-1 text-sm">
+                  <p>Your favorite colorscheme is missing? 🙀</p>
+                  <p>
+                    How about you{' '}
+                    <a
+                      href="https://github.com/farbenfroh/farbenfroh.io"
+                      className="underline"
+                      target={'_blank'}
+                      rel="noreferrer"
+                    >
+                      open a PR/create an issue
+                    </a>
+                    ?
+                  </p>
+                </div>
               </div>
               <div className="py-2">
                 <div className="mx-auto max-w-fit">
@@ -249,6 +284,12 @@ const Faerber = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="p-4 text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
+          a project by{' '}
+          <a href="https://github.com/nekowinston" className="text-blue-800">
+            winston 🤘
+          </a>
         </div>
       </div>
     </>
