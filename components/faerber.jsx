@@ -275,7 +275,7 @@ const Faerber = () => {
                   The color comparison method is how the algorithm calculates
                   the difference between each pixel in your image & the limited
                   colors in your colorscheme. The numbers correspond to the
-                  years the standard were set by the IEC. Newer standards
+                  years the standard were set by the CIE. Newer standards
                   require more computing power, but might give better / more
                   accurate results. More accurate isn{"'"}t always {"'"}better
                   {"'"} - since people like vinyl, and Instagram filters, old
