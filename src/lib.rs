@@ -1,4 +1,7 @@
-use deltae::*;
+mod custom_lab;
+
+use crate::custom_lab::CustomLab;
+use deltae::{DEMethod, DeltaE};
 use image::{EncodableLayout, ImageBuffer, Pixel, RgbaImage};
 use lab::Lab;
 use wasm_bindgen::prelude::*;
@@ -11,26 +14,6 @@ extern "C" {
     fn log(msg: &str);
 }
 
-#[derive(Copy, Clone)]
-struct MyLab {
-    l: f32,
-    a: f32,
-    b: f32,
-}
-impl MyLab {}
-
-impl From<MyLab> for LabValue {
-    fn from(my_lab: MyLab) -> Self {
-        LabValue {
-            l: my_lab.l,
-            a: my_lab.a,
-            b: my_lab.b,
-        }
-    }
-}
-
-impl<D: Delta + Copy> DeltaEq<D> for MyLab {}
-
 #[wasm_bindgen]
 pub fn process(
     buffer: Vec<u8>,
@@ -40,8 +23,11 @@ pub fn process(
     palette: &[u8],
     target_canvas: String,
 ) {
+    // RGBA, because ImageData always has 4 values for each pixel, R G B A
+    // we'll drop the 4th (alpha) later, so it's not used.
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
 
+    // parse the deltaE method
     let convert_method: DEMethod;
     if method == "76" {
         convert_method = deltae::DE1976
@@ -55,24 +41,31 @@ pub fn process(
         convert_method = deltae::DE1976
     }
 
+    // convert the user's RGB palette to LAB
     let mut labs = vec![];
     for (i, _e) in palette.iter().enumerate().step_by(3) {
         let val1 = palette[i + 0];
         let val2 = palette[i + 1];
         let val3 = palette[i + 2];
-        labs.push(Lab::from_rgb(&[val1, val2, val3]));
+        labs.push(CustomLab::from_rgb(&[val1, val2, val3]));
     }
 
-    // map the colors of the image to the LAB space
+    // convert the RGBA pixels in the image to LAB values
     let img_pixels = img.pixels();
-    let img_labs = img_pixels.map(|pixel| {
+    let mut img_labs: Vec<CustomLab> = vec![];
+
+    for pixel in img_pixels {
         let rgb = [
             pixel.channels()[0],
             pixel.channels()[1],
             pixel.channels()[2],
         ];
-        return Lab::from_rgb(&rgb);
-    });
+        img_labs.push(CustomLab {
+            l: Lab::from_rgb(&rgb).l,
+            a: Lab::from_rgb(&rgb).a,
+            b: Lab::from_rgb(&rgb).b,
+        });
+    }
 
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id(&target_canvas).unwrap();
@@ -91,35 +84,23 @@ pub fn process(
         .dyn_into::<CanvasRenderingContext2d>()
         .unwrap();
 
-    let iter_colors = labs.clone();
+    // our new Image - a mutable vector which we'll return
     let mut buffer_data = vec![];
 
+    // loop over each LAB in the LAB-converted image
     for lab in img_labs {
-        let labv = LabValue {
-            a: lab.a,
-            b: lab.b,
-            l: lab.l,
-        };
-
         // keep track of the closest color
-        let mut closest_color: LabValue = LabValue {
-            a: 0.0,
-            b: 0.0,
-            l: 0.0,
-        };
-        let mut closest_distance: f32 = 1000.0;
-        for color in &iter_colors {
-            let colorv = LabValue {
-                a: color.a,
-                b: color.b,
-                l: color.l,
-            };
-            let delta = DeltaE::new(&labv, &colorv, convert_method);
-            let deltav = delta.value();
+        let mut closest_color: CustomLab = Default::default();
+        // keep track of the closest distance measured, initially set as high as possible
+        let mut closest_distance: f32 = f32::MAX;
 
-            if deltav < &closest_distance {
-                closest_color = colorv.clone();
-                closest_distance = deltav.clone();
+        // loop over each LAB in the user's palette, and find the closest color
+        for color in &labs {
+            let delta = DeltaE::new(lab, color.clone(), convert_method);
+
+            if delta.value() < &closest_distance {
+                closest_color = color.clone();
+                closest_distance = delta.value().clone()
             }
         }
 
@@ -134,6 +115,7 @@ pub fn process(
         buffer_data.push(rgb[0]);
         buffer_data.push(rgb[1]);
         buffer_data.push(rgb[2]);
+        // alpha is always 255 (100%)
         buffer_data.push(255);
     }
 
