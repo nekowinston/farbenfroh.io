@@ -4,13 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 "deltae" = "0.3.0"
 "image" = "0.24.1"
 "lab" = "0.11.0"
 "wasm-bindgen" = "0.2.80"
+"rayon" = "1.5.2"
 
 [profile.release]
 lto = true
@@ -26,3 +27,10 @@ features = [
     'CanvasRenderingContext2d',
     'ImageData'
 ]
+
+[dev-dependencies]
+criterion = "0.1.2"
+
+[[bench]]
+name = "main_benchmark"
+harness = false

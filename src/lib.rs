@@ -1,8 +1,9 @@
-mod custom_lab;
+pub mod custom_lab;
 
 use crate::custom_lab::Lab;
 use deltae::{DEMethod, DeltaE};
 use image::{EncodableLayout, ImageBuffer, Pixel, RgbaImage};
+use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{Clamped, JsCast};
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
@@ -55,7 +56,7 @@ pub fn process(
     context.put_image_data(&data, 0 as f64, 0 as f64).unwrap();
 }
 
-fn convert_palette_to_lab(palette: &[u8]) -> Vec<Lab> {
+pub fn convert_palette_to_lab(palette: &[u8]) -> Vec<Lab> {
     let mut labs = vec![];
     for (i, _e) in palette.iter().enumerate().step_by(3) {
         let val1 = palette[i + 0];
@@ -82,7 +83,7 @@ fn parse_delta_e_method(method: String) -> DEMethod {
     return convert_method;
 }
 
-fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8> {
+pub fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8> {
     // convert the RGBA pixels in the image to LAB values
     let img_pixels = img.pixels();
     let mut img_labs: Vec<Lab> = vec![];
@@ -100,40 +101,37 @@ fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8>
         });
     }
 
-    // our new Image - a mutable vector which we'll return
-    let mut buffer_data = vec![];
-
     // loop over each LAB in the LAB-converted image
-    for lab in img_labs {
-        // keep track of the closest color
-        let mut closest_color: Lab = Default::default();
-        // keep track of the closest distance measured, initially set as high as possible
-        let mut closest_distance: f32 = f32::MAX;
+    let x: Vec<u8> = img_labs
+        .par_iter()
+        .map(|lab| {
+            // keep track of the closest color
+            let mut closest_color: Lab = Default::default();
+            // keep track of the closest distance measured, initially set as high as possible
+            let mut closest_distance: f32 = f32::MAX;
 
-        // loop over each LAB in the user's palette, and find the closest color
-        for color in labs {
-            let delta = DeltaE::new(lab, color.clone(), convert_method);
+            // loop over each LAB in the user's palette, and find the closest color
+            for color in labs {
+                let delta = DeltaE::new(lab.clone(), color.clone(), convert_method);
 
-            if delta.value() < &closest_distance {
-                closest_color = color.clone();
-                closest_distance = delta.value().clone()
+                if delta.value() < &closest_distance {
+                    closest_color = color.clone();
+                    closest_distance = delta.value().clone()
+                }
             }
-        }
 
-        // convert the LAB back to RGB
-        let lab = Lab {
-            a: closest_color.a,
-            b: closest_color.b,
-            l: closest_color.l,
-        };
-        let rgb = lab.to_rgb();
-        // push flattened rgb to buffer
-        buffer_data.push(rgb[0]);
-        buffer_data.push(rgb[1]);
-        buffer_data.push(rgb[2]);
-        // alpha is always 255 (100%)
-        buffer_data.push(255);
-    }
+            // convert the LAB back to RGB
+            let lab = Lab {
+                a: closest_color.a,
+                b: closest_color.b,
+                l: closest_color.l,
+            };
+            let rgb = lab.to_rgb();
 
-    return buffer_data;
+            return [rgb[0], rgb[1], rgb[2], 255];
+        })
+        .flatten()
+        .collect();
+
+    return x;
 }
