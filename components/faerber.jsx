@@ -83,14 +83,10 @@ const Faerber = () => {
 
   useEffect(() => {
     const getColorscheme = () => {
-      const flat = []
-      // convert the array of #rrggbb strings to an array of [r, g, b] arrays
-      selColors.forEach((val) => {
-        val = val.replace('#', '')
-        const rgb = [val.slice(0, 2), val.slice(2, 4), val.slice(4, 6)]
-        rgb.map((v) => (v = flat.push(parseInt(v, 16))))
+      return selColors.map((color) => {
+        const hex = color.replace('#', '')
+        return parseInt(hex, 16)
       })
-      return new Uint8Array(flat)
     }
 
     if (buffer) {

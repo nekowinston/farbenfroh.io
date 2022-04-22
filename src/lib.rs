@@ -21,7 +21,7 @@ pub fn process(
     width: u32,
     height: u32,
     method: String,
-    palette: &[u8],
+    palette: &[u32],
     target_canvas: String,
 ) {
     // RGBA, because ImageData always has 4 values for each pixel, R G B A
@@ -57,15 +57,16 @@ pub fn process(
     context.put_image_data(&data, 0 as f64, 0 as f64).unwrap();
 }
 
-pub fn convert_palette_to_lab(palette: &[u8]) -> Vec<Lab> {
-    let mut labs = vec![];
-    for (i, _e) in palette.iter().enumerate().step_by(3) {
-        let val1 = palette[i + 0];
-        let val2 = palette[i + 1];
-        let val3 = palette[i + 2];
-        labs.push(Lab::from_rgb(&[val1, val2, val3]));
-    }
-    return labs;
+pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
+    palette
+        .iter()
+        .map(|color| {
+            let r = ((color >> 16) & 0xFF) as u8;
+            let g = ((color >> 8) & 0xFF) as u8;
+            let b = (color & 0xFF) as u8;
+            Lab::from_rgb(&[r, g, b])
+        })
+        .collect()
 }
 
 pub fn parse_delta_e_method(method: String) -> DEMethod {
