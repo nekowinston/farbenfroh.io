@@ -2,7 +2,8 @@ pub mod custom_lab;
 
 use crate::custom_lab::Lab;
 use deltae::{DEMethod, DeltaE};
-use image::{EncodableLayout, ImageBuffer, Pixel, RgbaImage};
+use image::buffer::Pixels;
+use image::{EncodableLayout, ImageBuffer, Rgba, RgbaImage};
 use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{Clamped, JsCast};
@@ -79,53 +80,45 @@ pub fn parse_delta_e_method(method: String) -> DEMethod {
 
 pub fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8> {
     // convert the RGBA pixels in the image to LAB values
-    let img_pixels = img.pixels();
-    let mut img_labs: Vec<Lab> = vec![];
+    let img_labs = rgba_pixels_to_labs(img.pixels());
 
-    for pixel in img_pixels {
-        let rgb = [
-            pixel.channels()[0],
-            pixel.channels()[1],
-            pixel.channels()[2],
-        ];
-        img_labs.push(Lab {
-            l: Lab::from_rgb(&rgb).l,
-            a: Lab::from_rgb(&rgb).a,
-            b: Lab::from_rgb(&rgb).b,
-        });
+    // loop over each LAB in the LAB-converted image:
+    // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
+    return if convert_method != DEMethod::DE2000 {
+        img_labs
+            .iter()
+            .map(|lab| convert_loop(convert_method, labs, lab))
+            .flatten()
+            .collect()
+    } else {
+        img_labs
+            .par_iter()
+            .map(|lab| convert_loop(convert_method, labs, lab))
+            .flatten()
+            .collect()
+    };
+}
+
+pub fn rgba_pixels_to_labs(img_pixels: Pixels<Rgba<u8>>) -> Vec<Lab> {
+    img_pixels.map(|pixel| Lab::from_rgba(&pixel.0)).collect()
+}
+
+pub fn convert_loop(convert_method: DEMethod, palette: &Vec<Lab>, lab: &Lab) -> [u8; 4] {
+    // keep track of the closest color
+    let mut closest_color: Lab = Default::default();
+    // keep track of the closest distance measured, initially set as high as possible
+    let mut closest_distance: f32 = f32::MAX;
+
+    // loop over each LAB in the user's palette, and find the closest color
+    for color in palette {
+        let delta = DeltaE::new(lab.clone(), color.clone(), convert_method);
+
+        if delta.value() < &closest_distance {
+            closest_color = color.clone();
+            closest_distance = delta.value().clone()
+        }
     }
 
-    // loop over each LAB in the LAB-converted image
-    let x: Vec<u8> = img_labs
-        .par_iter()
-        .map(|lab| {
-            // keep track of the closest color
-            let mut closest_color: Lab = Default::default();
-            // keep track of the closest distance measured, initially set as high as possible
-            let mut closest_distance: f32 = f32::MAX;
-
-            // loop over each LAB in the user's palette, and find the closest color
-            for color in labs {
-                let delta = DeltaE::new(lab.clone(), color.clone(), convert_method);
-
-                if delta.value() < &closest_distance {
-                    closest_color = color.clone();
-                    closest_distance = delta.value().clone()
-                }
-            }
-
-            // convert the LAB back to RGB
-            let lab = Lab {
-                a: closest_color.a,
-                b: closest_color.b,
-                l: closest_color.l,
-            };
-            let rgb = lab.to_rgb();
-
-            return [rgb[0], rgb[1], rgb[2], 255];
-        })
-        .flatten()
-        .collect();
-
-    return x;
+    // convert the LAB back to RGBA
+    closest_color.to_rgba()
 }
