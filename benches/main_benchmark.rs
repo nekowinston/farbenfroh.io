@@ -1,8 +1,8 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
 use deltae::DEMethod;
-use faerber::convert;
 use faerber::custom_lab::Lab;
+use faerber::{convert, rgba_pixels_to_labs};
 use image::RgbaImage;
 
 fn convert_image_e76(img: RgbaImage, palette: Vec<Lab>) -> Vec<u8> {
@@ -29,6 +29,8 @@ pub fn benchmark(c: &mut Criterion) {
         .expect("Benchmark image should exist")
         .to_rgba8();
 
+    let img_pixels = img.pixels();
+
     // benchmark colorscheme: Nord - by Arctic Ice Studio
     let colors: &[u8] = &[
         0xB5, 0x8D, 0xAE, 0xA2, 0xBF, 0x8A, 0xEC, 0xCC, 0x87, 0xD2, 0x87, 0x6D, 0xC1, 0x60, 0x69,
@@ -39,6 +41,7 @@ pub fn benchmark(c: &mut Criterion) {
 
     let palette = faerber::convert_palette_to_lab(colors);
 
+    // deltaE benchmarks
     c.bench_function("deltaE76", |b| {
         b.iter(|| convert_image_e76(img.clone(), palette.clone()))
     });
@@ -50,6 +53,11 @@ pub fn benchmark(c: &mut Criterion) {
     });
     c.bench_function("deltaE2000", |b| {
         b.iter(|| convert_image_e2000(img.clone(), palette.clone()))
+    });
+
+    // all the other operations
+    c.bench_function("rgba_pixel_to_lab", |b| {
+        b.iter(|| rgba_pixels_to_labs(img_pixels.clone()))
     });
 }
 
