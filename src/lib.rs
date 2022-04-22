@@ -67,20 +67,14 @@ pub fn convert_palette_to_lab(palette: &[u8]) -> Vec<Lab> {
     return labs;
 }
 
-fn parse_delta_e_method(method: String) -> DEMethod {
-    let convert_method: DEMethod;
-    if method == "76" {
-        convert_method = deltae::DE1976
-    } else if method == "94t" || method == "94" {
-        convert_method = deltae::DE1994T
-    } else if method == "94g" {
-        convert_method = deltae::DE1994G
-    } else if method == "2000" {
-        convert_method = deltae::DE2000
-    } else {
-        convert_method = deltae::DE1976
-    }
-    return convert_method;
+pub fn parse_delta_e_method(method: String) -> DEMethod {
+    return match method.as_str() {
+        "76" => deltae::DE1976,
+        "94t" => deltae::DE1976,
+        "94g" => deltae::DE1976,
+        "2000" => deltae::DE1976,
+        _ => deltae::DE1976,
+    };
 }
 
 pub fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8> {
