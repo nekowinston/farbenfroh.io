@@ -12,16 +12,26 @@ impl Lab {
     pub fn new(l: f32, a: f32, b: f32) -> Lab {
         Lab { l, a, b }
     }
+
     pub(crate) fn from_rgb(rgb: &[u8; 3]) -> Self {
-        let lab_values = LabBase::from_rgb(rgb);
-        return Lab {
-            l: lab_values.l,
-            a: lab_values.a,
-            b: lab_values.b,
-        };
+        Lab::from(LabBase::from_rgb(rgb))
     }
+
+    pub(crate) fn from_rgba(rgba: &[u8; 4]) -> Self {
+        Lab::from(LabBase::from_rgba(rgba))
+    }
+
+    pub(crate) fn from(lab: lab::Lab) -> Self {
+        Lab::new(lab.l, lab.a, lab.b)
+    }
+
     pub(crate) fn to_rgb(self: Self) -> [u8; 3] {
-        return LabBase::from(self).to_rgb();
+        LabBase::from(self).to_rgb()
+    }
+
+    pub(crate) fn to_rgba(self: Self) -> [u8; 4] {
+        let rgb = LabBase::from(self).to_rgb();
+        [rgb[0], rgb[1], rgb[2], 255]
     }
 }
 
