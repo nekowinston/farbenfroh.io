@@ -349,8 +349,14 @@ const Faerber = () => {
       </div>
       <div className="p-4 text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
         a project by{' '}
-        <a href="https://github.com/nekowinston" className="text-blue-800">
-          winston 🤘
+        <a
+          href="https://github.com/nekowinston"
+          className="group text-pink-300"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="decoration-wavy group-hover:underline">winston</span>{' '}
+          🤘
         </a>
       </div>
     </div>
