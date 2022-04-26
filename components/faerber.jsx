@@ -1,11 +1,12 @@
 import { Arrow90degUp } from '@styled-icons/bootstrap/Arrow90degUp'
-import { Download, Trash, Upload } from '@styled-icons/octicons'
+import { Alert, Download, Trash, Upload } from '@styled-icons/octicons'
+import { LoaderAlt } from '@styled-icons/boxicons-regular'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
 import tw from 'tailwind-styled-components'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
-import { process } from '../pkg'
+import * as Comlink from 'comlink'
 
 const Button = tw.button`
 m-2 inline-block rounded bg-slate-500 p-2
@@ -20,6 +21,9 @@ const Faerber = () => {
   const [buffer, setBuffer] = useState(null)
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
   const [downloadable, setDownloadable] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const workerRef = useRef()
 
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e) => {
@@ -82,6 +86,21 @@ const Faerber = () => {
   }
 
   useEffect(() => {
+    ;(async () => {
+      workerRef.current = await Comlink.wrap(
+        new Worker(new URL('../lib/worker.js', import.meta.url), {
+          type: 'module',
+        })
+      )
+    })().then(() => {
+      console.log(workerRef.current)
+    })
+    return () => {
+      workerRef.current.terminate()
+    }
+  }, [])
+
+  useEffect(async () => {
     const getColorscheme = () => {
       return selColors.map((color) => {
         const hex = color.replace('#', '')
@@ -90,11 +109,16 @@ const Faerber = () => {
     }
 
     if (buffer) {
-      // convert to Uint8Array, to pass it on to webassembly
+      setLoading(true)
+      // warn if the image is large, as it will take a while to process
+      if (imageSize.width * imageSize.height >= 2560 * 1440) {
+        setShowWarning(true)
+      }
+
       // get the converted colorscheme
       const colorscheme = getColorscheme()
       // call webassembly
-      process(
+      await workerRef.current.process(
         buffer,
         imageSize.width,
         imageSize.height,
@@ -102,7 +126,19 @@ const Faerber = () => {
         colorscheme,
         'resultCanvas'
       )
-      setDownloadable(true)
+      const data = await workerRef.current.data
+      // set the result canvas
+      const imgData = new ImageData(
+        new Uint8ClampedArray(data),
+        imageSize.width,
+        imageSize.height
+      )
+      const ctx = resultCanvasRef.current.getContext('2d')
+      ctx.canvas.width = imageSize.width
+      ctx.canvas.height = imageSize.height
+      ctx.putImageData(imgData, 0, 0)
+      setShowWarning(false)
+      setLoading(false)
     }
   }, [buffer, selMethod, selColors, imageSize.width, imageSize.height])
 
@@ -111,7 +147,16 @@ const Faerber = () => {
       <Head>
         <title>farbenfroh.io :: faerber</title>
       </Head>
-      <div className="h-full bg-slate-800 text-gray-100">
+      <div className="relative h-full bg-slate-800 text-gray-100">
+        <div className="fixed w-full">
+          {showWarning && (
+            <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 rounded-md bg-orange-400 p-4 text-xl shadow-lg">
+              <Alert className="h-12 w-12" />
+              You have used quite a large image. This may take a while, and your
+              browser might freeze, depending on your hardware.
+            </div>
+          )}
+        </div>
         <div className="pt-8 text-center md:p-0">
           <h1 className="bg-gradient-to-r from-pink-500 to-violet-400 bg-clip-text p-4 font-lobster text-8xl text-transparent">
             faerber
@@ -146,7 +191,14 @@ const Faerber = () => {
               className="max-h-full max-w-full"
             ></canvas>
           </div>
-          <div className="flex aspect-video w-full items-center justify-center border border-gray-600 bg-gray-800 p-4">
+          <div className="relative flex aspect-video w-full items-center justify-center border border-gray-600 bg-gray-800 p-4">
+            {loading && (
+              <div className="absolute inset-0 flex w-full items-center justify-center">
+                <div className="rounded-full bg-slate-500/30">
+                  <LoaderAlt className="h-24 w-24 animate-spin p-4" />
+                </div>
+              </div>
+            )}
             <canvas
               id="resultCanvas"
               ref={resultCanvasRef}

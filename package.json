@@ -7,9 +7,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:wasm": "cargo watch -i README.md -i .gitignore -i 'pkg/*' -s 'wasm-pack build --no-typescript'",
+    "dev:wasm": "cargo watch -i README.md -i .gitignore -i 'pkg/*' -s 'wasm-pack build --target web --no-typescript'",
     "build": "next build",
-    "build:wasm": "wasm-pack build --no-typescript",
+    "build:wasm": "wasm-pack build --no-typescript --target web --release",
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
@@ -33,6 +33,7 @@
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {
+    "comlink": "^4.3.1",
     "next": "^12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
