@@ -12,21 +12,11 @@ crate-type = ["cdylib", "rlib"]
 "lab" = "0.11.0"
 "wasm-bindgen" = "0.2.80"
 "rayon" = "1.5.2"
+"wasm-bindgen-rayon" = "1.0.3"
 
 [profile.release]
 lto = true
 opt-level= 's'
-
-[dependencies.web-sys]
-version = "0.3.4"
-features = [
-    'Window',
-    'Document',
-    'Element',
-    'HtmlCanvasElement',
-    'CanvasRenderingContext2d',
-    'ImageData'
-]
 
 [dev-dependencies]
 criterion = "0.1.2"

@@ -7,7 +7,7 @@ use image::{EncodableLayout, ImageBuffer, Rgba, RgbaImage};
 use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{Clamped, JsCast};
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
+pub use wasm_bindgen_rayon::init_thread_pool;
 
 #[wasm_bindgen]
 extern "C" {
@@ -22,8 +22,7 @@ pub fn process(
     height: u32,
     method: String,
     palette: &[u32],
-    target_canvas: String,
-) {
+) -> Vec<u8> {
     // RGBA, because ImageData always has 4 values for each pixel, R G B A
     // we'll drop the 4th (alpha) later, so it's not used.
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
@@ -33,28 +32,7 @@ pub fn process(
     // convert the user's RGB palette to LAB
     let labs = convert_palette_to_lab(palette);
 
-    let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id(&target_canvas).unwrap();
-    let canvas: web_sys::HtmlCanvasElement = canvas
-        .dyn_into::<HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
-
-    canvas.set_width(width);
-    canvas.set_height(height);
-
-    let context = canvas
-        .get_context("2d")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<CanvasRenderingContext2d>()
-        .unwrap();
-
-    let buffer_data = convert(img, convert_method, &labs);
-
-    let data = buffer_data.as_bytes();
-    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(data), width, height).unwrap();
-    context.put_image_data(&data, 0 as f64, 0 as f64).unwrap();
+    return convert(img, convert_method, &labs);
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
