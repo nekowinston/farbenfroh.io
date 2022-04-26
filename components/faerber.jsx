@@ -78,8 +78,11 @@ const Faerber = () => {
   const addCustomColor = () => {
     const color = customColorRef.current.value
     const regex = /^#[\dA-F]{6}$/i
-    if (regex.test(color)) {
+    const alreadyExists = selColors.find((c) => c === color)
+    if (regex.test(color) && !alreadyExists) {
       setSelColors([...selColors, color])
+      customColorRef.current.value = ''
+    } else if (alreadyExists) {
       customColorRef.current.value = ''
     }
   }
@@ -256,9 +259,20 @@ const Faerber = () => {
                   id="customColorAdd"
                   ref={customColorRef}
                   className="bg-slate-500"
+                  onChange={(e) => {
+                    const color = e.target.value.replace('#', '')
+                    const length = color.length
+                    if (length >= 6) {
+                      e.target.value = '#' + color.slice(0, 6)
+                    }
+                  }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      addCustomColor()
+                    const color = e.target.value.replace('#', '')
+                    const length = color.length
+                    if (length === 6) {
+                      if (e.key === 'Enter') {
+                        addCustomColor()
+                      }
                     }
                   }}
                 />
