@@ -23,4 +23,8 @@ module.exports = {
     config.experiments = { asyncWebAssembly: true }
     return config
   },
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
+  },
 }
