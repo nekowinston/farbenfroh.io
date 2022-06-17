@@ -5,6 +5,7 @@ use iced::{
     Scrollable, Settings, Slider, Space, Text, TextInput, Toggler,
 };
 
+use native_dialog::FileDialog;
 
 pub fn main() -> iced::Result {
     Hello::run(Settings::default())
@@ -19,6 +20,8 @@ struct Hello {
 enum Message {
         ButtonPressed,
 }
+
+
 
 impl Sandbox for Hello {
     type Message = Message;
@@ -35,16 +38,27 @@ impl Sandbox for Hello {
         match message {
             Message::ButtonPressed => {
                 println!("Button pressed");
+                let path = FileDialog::new()
+                    .set_location("~")
+                    .add_filter("PNG Image", &["png"])
+                    .add_filter("JPEG Image", &["jpg", "jpeg"])
+                    .show_open_single_file()
+                    .unwrap();
+                let path = match path {
+                    Some(path) => path,
+                    None => return,
+                };
+                println!("File Selected: {:?}", path);
             }
         }
     }
 
-    fn view(&mut self) -> Element<Self::Message> {
-        let content = Column::new()
-            .padding(20)
-            .align_items(Alignment::Center)
-            .push(
-                Text::new("faerber!")
+        fn view(&mut self) -> Element<Self::Message> {
+            let content = Column::new()
+                .padding(20)
+                .align_items(Alignment::Center)
+                .push(
+                    Text::new("faerber!")
                     .size(100)
             )
             .push(  
