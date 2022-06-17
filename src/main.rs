@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use iced::{
     alignment, button, scrollable, slider, text_input, Alignment, Button, Checkbox, Color,
     Column, Container, ContentFit, Element, Length, Radio, Row, Sandbox,
@@ -31,7 +32,11 @@ impl Sandbox for Hello {
     }
     
     fn update(&mut self, message: Self::Message) {
-        
+        match message {
+            Message::ButtonPressed => {
+                println!("Button pressed");
+            }
+        }
     }
 
     fn view(&mut self) -> Element<Self::Message> {
