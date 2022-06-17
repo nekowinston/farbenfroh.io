@@ -40,7 +40,7 @@ impl Sandbox for Hello {
     }
 
     fn view(&mut self) -> Element<Self::Message> {
-        Column::new()
+        let content = Column::new()
             .padding(20)
             .align_items(Alignment::Center)
             .push(
@@ -50,7 +50,12 @@ impl Sandbox for Hello {
             .push(  
                 Button::new(&mut self.upload, Text::new("Upload"))
                     .on_press(Message::ButtonPressed),
-            )
+            );
+        Container::new(content)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x()
+            .center_y()
             .into()
     }
 }
