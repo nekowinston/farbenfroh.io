@@ -6,6 +6,7 @@ use iced::{
 };
 
 use native_dialog::FileDialog;
+use faerber::palettize;
 
 pub fn main() -> iced::Result {
     Hello::run(Settings::default())
@@ -45,10 +46,12 @@ impl Sandbox for Hello {
                     .show_open_single_file()
                     .unwrap();
                 let path = match path {
-                    Some(path) => path,
+                    Some(path) => {
+                        println!("File selected: {:?}", path);
+                        palettize(path.to_str(), "latte", "result.png")
+                    },
                     None => return,
                 };
-                println!("File Selected: {:?}", path);
             }
         }
     }
