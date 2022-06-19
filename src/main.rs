@@ -45,7 +45,7 @@ impl Sandbox for Hello {
                     .add_filter("JPEG Image", &["jpg", "jpeg"])
                     .show_open_single_file()
                     .unwrap();
-                let path = match path {
+                match path {
                     Some(path) => {
                         println!("File selected: {:?}", path);
                         palettize(path.to_str(), "latte", "result.png")
