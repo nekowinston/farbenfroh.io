@@ -6,6 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iced = "0.4"
+iced = {version = "0.4", features = ["image"]}
 native-dialog = {version = "0.6.3", features = ["windows_dpi_awareness", "windows_visual_styles"]}
 faerber = { path = "faerber_rs" }

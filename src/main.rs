@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use iced::{
     alignment, button, scrollable, slider, text_input, Alignment, Button, Checkbox, Color,
-    Column, Container, ContentFit, Element, Length, Radio, Row, Sandbox,
+    Column, Container, ContentFit, Element, Image, Length, Radio, Row, Sandbox,
     Scrollable, Settings, Slider, Space, Text, TextInput, Toggler,
 };
 
@@ -9,13 +9,19 @@ use native_dialog::FileDialog;
 use faerber::palettize;
 
 pub fn main() -> iced::Result {
-    Hello::run(Settings::default())
+    Faerber::run(Settings::default())
 }
 
-#[derive(Default)]
-struct Hello {
-    upload: button::State,
+#[derive(Debug)]
+enum Faerber {
+    Fresh {
+        upload: button::State,
+    },
+    Finished {
+        upload: button::State,
+    },
 }
+
 
 #[derive(Debug, Clone, Copy)]
 enum Message {
@@ -24,11 +30,14 @@ enum Message {
 
 
 
-impl Sandbox for Hello {
+impl Sandbox for Faerber {
     type Message = Message;
+
     
     fn new() -> Self {
-        Self::default()
+        Self::Fresh {
+            upload: button::State::new(),
+        }
     }
 
     fn title(&self) -> String {
@@ -48,7 +57,8 @@ impl Sandbox for Hello {
                 match path {
                     Some(path) => {
                         println!("File selected: {:?}", path);
-                        palettize(path.to_str(), "latte", "result.png")
+                        palettize(path.to_str(), "latte", "result.png");
+                        *self = Self::Finished { upload: button::State::new() }
                     },
                     None => return,
                 };
@@ -57,17 +67,33 @@ impl Sandbox for Hello {
     }
 
         fn view(&mut self) -> Element<Self::Message> {
-            let content = Column::new()
-                .padding(20)
-                .align_items(Alignment::Center)
-                .push(
-                    Text::new("faerber!")
-                    .size(100)
-            )
-            .push(  
-                Button::new(&mut self.upload, Text::new("Upload"))
-                    .on_press(Message::ButtonPressed),
-            );
+            let content = match self { 
+                Self::Fresh {upload} => Column::new()
+                    .padding(20)
+                    .align_items(Alignment::Center)
+                    .push(
+                        Text::new("faerber!")
+                        .size(100)
+                    )
+                    .push(  
+                        Button::new(upload, Text::new("Upload"))
+                            .on_press(Message::ButtonPressed),
+                    ),
+                Self::Finished {upload} => Column::new()
+                        .padding(20)
+                        .align_items(Alignment::Center)
+                        .push(
+                            Text::new("faerber!")
+                            .size(100)
+                        )
+                        .push(  
+                            Button::new(upload, Text::new("Upload"))
+                                .on_press(Message::ButtonPressed),
+                        )
+                        .push(
+                            Image::new("result.png")
+                        ),
+            };
         Container::new(content)
             .width(Length::Fill)
             .height(Length::Fill)
