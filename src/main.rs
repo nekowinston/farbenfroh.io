@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use iced::{
     alignment, button, scrollable, slider, text_input, Alignment, Button, Checkbox, Color,
-    Column, Container, ContentFit, Element, Image, Length, Radio, Row, Sandbox,
+    Column, Container, ContentFit, Command, Element, Image, Length, Radio, Row, Sandbox,
     Scrollable, Settings, Slider, Space, Text, TextInput, Toggler,
 };
 
@@ -23,8 +23,9 @@ enum Faerber {
 }
 
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 enum Message {
+        Completed(Result<(),Error>),
         ButtonPressed,
 }
 
@@ -57,7 +58,8 @@ impl Sandbox for Faerber {
                 match path {
                     Some(path) => {
                         println!("File selected: {:?}", path);
-                        palettize(path.to_str(), "latte", "result.png");
+                        //palettize(path.to_str(), "latte", "result.png");
+                        Command::perform(magic(path.to_str()), Message::Completed);
                         *self = Self::Finished { upload: button::State::new() }
                     },
                     None => return,
@@ -101,4 +103,14 @@ impl Sandbox for Faerber {
             .center_y()
             .into()
     }
+}
+
+async fn magic(path: Option<&str>) {
+    palettize(path, "latte", "result.png");
+}
+
+#[derive(Debug,Clone)]
+enum Error {
+    APIError,
+    LanguageError,
 }
