@@ -167,7 +167,7 @@ const Faerber = () => {
           </div>
         )}
         <div>
-          <div className="mx-auto max-w-xl ">
+          <div className="mx-auto max-w-6xl ">
             <h3 className="mx-auto max-w-fit rounded-t-lg border border-b-0 border-slate-500 bg-slate-700 px-4 text-center text-xl">
               Colors to match against:
             </h3>
