@@ -18,6 +18,7 @@ const Faerber = () => {
     colorSchemePresets['Catppuccin Mocha']
   )
   const [selMethod, setSelMethod] = useState('76')
+  const [selMulti, setSelMulti] = useState('1')
   const [buffer, setBuffer] = useState(null)
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
   const [downloadable, setDownloadable] = useState(false)
@@ -116,7 +117,7 @@ const Faerber = () => {
         imageSize.height,
         selMethod,
         colorscheme,
-        'resultCanvas'
+        selMulti
       )
       const data = await workerRef.current.data
       // set the result canvas
@@ -146,7 +147,14 @@ const Faerber = () => {
       // call webassembly
       processImage(colorscheme)
     }
-  }, [buffer, selMethod, selColors, imageSize.width, imageSize.height])
+  }, [
+    buffer,
+    selMethod,
+    selColors,
+    imageSize.width,
+    imageSize.height,
+    selMulti,
+  ])
 
   return (
     <>
@@ -326,21 +334,41 @@ const Faerber = () => {
               </div>
               <div className="py-2">
                 <div className="mx-auto max-w-fit">
-                  <label htmlFor="methodSelector" className="block">
-                    Color comparison method:
-                  </label>
-                  <select
-                    id="methodSelector"
-                    name="methodSelector"
-                    className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                    defaultValue={selMethod}
-                    onChange={(e) => setSelMethod(e.target.value)}
-                  >
-                    <option value="76">Delta E 76</option>
-                    <option value="94t">Delta E 94-T</option>
-                    <option value="94g">Delta E 94-G</option>
-                    <option value="2000">Delta E 2000</option>
-                  </select>
+                  <div className="flex flex-col gap-4 md:flex-row">
+                    <div>
+                      <label htmlFor="methodSelector" className="block">
+                        Color comparison method:
+                      </label>
+                      <select
+                        id="methodSelector"
+                        name="methodSelector"
+                        className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        defaultValue={selMethod}
+                        onChange={(e) => setSelMethod(e.target.value)}
+                      >
+                        <option value="76">Delta E 76</option>
+                        <option value="94t">Delta E 94-T</option>
+                        <option value="94g">Delta E 94-G</option>
+                        <option value="2000">Delta E 2000</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="multiThreadingSelector" className="block">
+                        Multi-threading:
+                      </label>
+                      <select
+                        id="methodSelector"
+                        name="methodSelector"
+                        className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        defaultValue={selMulti}
+                        onChange={(e) => setSelMulti(e.target.value)}
+                      >
+                        <option value="0">Never</option>
+                        <option value="1">Smart</option>
+                        <option value="2">Always</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 <p className="prose-lg p-4 text-text">
                   The color comparison method is how the algorithm calculates
