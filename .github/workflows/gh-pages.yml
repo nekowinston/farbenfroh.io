@@ -11,17 +11,19 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v3.0.1
+      - uses: actions/checkout@v3
 
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1.0.6
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - uses: Swatinem/rust-cache@v1.3.0
-      - run: cargo install wasm-pack
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Setup Node
-        uses: actions/setup-node@v3.1.1
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'yarn'
@@ -32,7 +34,7 @@ jobs:
       - run: yarn export
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3.8.0
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
