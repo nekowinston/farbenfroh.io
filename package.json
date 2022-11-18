@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:wasm": "cargo watch -i README.md -i .gitignore -i 'pkg/*' -s 'wasm-pack build --no-typescript'",
+    "dev:wasm": "cargo watch -i README.md -i .gitignore -i 'pkg/*' -s 'wasm-pack build --no-typescript --target web --profiling'",
     "build": "yarn build:wasm; next build",
     "build:wasm": "wasm-pack build --no-typescript --target web --release",
     "start": "next start",

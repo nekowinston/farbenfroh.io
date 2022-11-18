@@ -25,11 +25,11 @@ impl Lab {
         Lab::new(lab.l, lab.a, lab.b)
     }
 
-    pub(crate) fn to_rgb(self: Self) -> [u8; 3] {
+    pub(crate) fn to_rgb(self) -> [u8; 3] {
         LabBase::from(self).to_rgb()
     }
 
-    pub(crate) fn to_rgba(self: Self) -> [u8; 4] {
+    pub(crate) fn to_rgba(self) -> [u8; 4] {
         let rgb = LabBase::from(self).to_rgb();
         [rgb[0], rgb[1], rgb[2], 255]
     }

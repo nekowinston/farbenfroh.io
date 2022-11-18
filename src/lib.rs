@@ -21,17 +21,29 @@ pub fn process(
     height: u32,
     method: String,
     palette: &[u32],
+    multithreading: u8,
 ) -> Vec<u8> {
     // RGBA, because ImageData always has 4 values for each pixel, R G B A
     // we'll drop the 4th (alpha) later, so it's not used.
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
 
     // parse the deltaE method
-    let convert_method = parse_delta_e_method(method);
+    let method = parse_delta_e_method(method);
     // convert the user's RGB palette to LAB
     let labs = convert_palette_to_lab(palette);
 
-    return convert(img, convert_method, &labs);
+    log(&format!(
+        "Using multithreading: {}",
+        match multithreading {
+            0 => "off",
+            1 => "smart",
+            2 => "always",
+            _ => "unknown",
+        }
+    ));
+    let multithreading = multithreading == 2 || (multithreading == 1 && method == DEMethod::DE2000);
+
+    convert(img, method, &labs, multithreading)
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
@@ -47,53 +59,54 @@ pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
 }
 
 pub fn parse_delta_e_method(method: String) -> DEMethod {
-    return match method.as_str() {
+    match method.as_str() {
         "76" => deltae::DE1976,
         "94t" => deltae::DE1976,
         "94g" => deltae::DE1976,
         "2000" => deltae::DE1976,
         _ => deltae::DE1976,
-    };
+    }
 }
 
-pub fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8> {
+pub fn convert(img: RgbaImage, method: DEMethod, labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
     // convert the RGBA pixels in the image to LAB values
     let img_labs = rgba_pixels_to_labs(img.pixels());
+    log(&format!("Using {} threads", rayon::current_num_threads()));
 
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
-    return if convert_method != DEMethod::DE2000 {
-        img_labs
-            .iter()
-            .map(|lab| convert_loop(convert_method, labs, lab))
-            .flatten()
-            .collect()
-    } else {
+    if multithreading {
+        log("multithreading");
         img_labs
             .par_iter()
-            .map(|lab| convert_loop(convert_method, labs, lab))
-            .flatten()
+            .flat_map(|lab| convert_loop(method, labs, lab))
             .collect()
-    };
+    } else {
+        log("Not multithreading");
+        img_labs
+            .iter()
+            .flat_map(|lab| convert_loop(method, labs, lab))
+            .collect()
+    }
 }
 
 pub fn rgba_pixels_to_labs(img_pixels: Pixels<Rgba<u8>>) -> Vec<Lab> {
     img_pixels.map(|pixel| Lab::from_rgba(&pixel.0)).collect()
 }
 
-pub fn convert_loop(convert_method: DEMethod, palette: &Vec<Lab>, lab: &Lab) -> [u8; 4] {
+pub fn convert_loop(method: DEMethod, palette: &Vec<Lab>, lab: &Lab) -> [u8; 4] {
     // keep track of the closest color
     let mut closest_color: Lab = Default::default();
     // keep track of the closest distance measured, initially set as high as possible
-    let mut closest_distance: f32 = f32::MAX;
+    let mut closest_distance: f32 = f32::INFINITY;
 
     // loop over each LAB in the user's palette, and find the closest color
     for color in palette {
-        let delta = DeltaE::new(lab.clone(), color.clone(), convert_method);
+        let delta = DeltaE::new(*lab, *color, method);
 
         if delta.value() < &closest_distance {
-            closest_color = color.clone();
-            closest_distance = delta.value().clone()
+            closest_color = *color;
+            closest_distance = *delta.value();
         }
     }
 
