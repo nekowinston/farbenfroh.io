@@ -61,10 +61,10 @@ pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
 pub fn parse_delta_e_method(method: String) -> DEMethod {
     match method.as_str() {
         "76" => deltae::DE1976,
-        "94t" => deltae::DE1976,
-        "94g" => deltae::DE1976,
-        "2000" => deltae::DE1976,
-        _ => deltae::DE1976,
+        "94t" => deltae::DE1994T,
+        "94g" => deltae::DE1994G,
+        "2000" => deltae::DE2000,
+        _ => deltae::DE1994G,
     }
 }
 
