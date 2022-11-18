@@ -357,8 +357,8 @@ const Faerber = () => {
                         Multi-threading:
                       </label>
                       <select
-                        id="methodSelector"
-                        name="methodSelector"
+                        id="multiThreadingSelector"
+                        name="multiThreadingSelector"
                         className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMulti}
                         onChange={(e) => setSelMulti(e.target.value)}
