@@ -2,11 +2,13 @@ import Arrow90degUp from '@svg-icons/bootstrap/arrow-90deg-up.svg'
 import Save from '@svg-icons/bootstrap/save.svg'
 import Trash from '@svg-icons/octicons/trash.svg'
 import AddImage from '@svg-icons/bootstrap/file-earmark-image.svg'
+import Gear from '@svg-icons/bootstrap/gear.svg'
+import Alert from '@svg-icons/bootstrap/exclamation-diamond-fill.svg'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
-import { process } from '../pkg'
+import * as Comlink from 'comlink'
 
 const Faerber = () => {
   const previewCanvasRef = useRef()
@@ -19,6 +21,9 @@ const Faerber = () => {
   const [buffer, setBuffer] = useState(null)
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
   const [downloadable, setDownloadable] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const workerRef = useRef()
 
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e) => {
@@ -74,30 +79,40 @@ const Faerber = () => {
   const addCustomColor = () => {
     const color = customColorRef.current.value
     const regex = /^#[\dA-F]{6}$/i
-    if (regex.test(color)) {
+    const alreadyExists = selColors.find((c) => c === color)
+    if (regex.test(color) && !alreadyExists) {
       setSelColors([...selColors, color])
+      customColorRef.current.value = ''
+    } else if (alreadyExists) {
       customColorRef.current.value = ''
     }
   }
 
   useEffect(() => {
+    ;(async () => {
+      workerRef.current = await Comlink.wrap(
+        new Worker(new URL('../lib/worker.js', import.meta.url), {
+          type: 'module',
+        })
+      )
+    })().then(() => {
+      console.log(workerRef.current)
+    })
+    return () => {
+      workerRef.current?.terminate()
+    }
+  }, [])
+
+  useEffect(() => {
     const getColorscheme = () => {
-      const flat = []
-      // convert the array of #rrggbb strings to an array of [r, g, b] arrays
-      selColors.forEach((val) => {
-        val = val.replace('#', '')
-        const rgb = [val.slice(0, 2), val.slice(2, 4), val.slice(4, 6)]
-        rgb.map((v) => flat.push(parseInt(v, 16)))
+      return selColors.map((color) => {
+        const hex = color.replace('#', '')
+        return parseInt(hex, 16)
       })
-      return new Uint8Array(flat)
     }
 
-    if (buffer) {
-      // convert to Uint8Array, to pass it on to webassembly
-      // get the converted colorscheme
-      const colorscheme = getColorscheme()
-      // call webassembly
-      process(
+    const processImage = async (colorscheme) => {
+      await workerRef.current.process(
         buffer,
         imageSize.width,
         imageSize.height,
@@ -105,7 +120,33 @@ const Faerber = () => {
         colorscheme,
         'resultCanvas'
       )
+      const data = await workerRef.current.data
+      // set the result canvas
+      const imgData = new ImageData(
+        new Uint8ClampedArray(data),
+        imageSize.width,
+        imageSize.height
+      )
+      const ctx = resultCanvasRef.current.getContext('2d')
+      ctx.canvas.width = imageSize.width
+      ctx.canvas.height = imageSize.height
+      ctx.putImageData(imgData, 0, 0)
+      setShowWarning(false)
       setDownloadable(true)
+      setLoading(false)
+    }
+
+    if (buffer) {
+      setLoading(true)
+      // warn if the image is large, as it will take a while to process
+      if (imageSize.width * imageSize.height >= 2560 * 1440) {
+        setShowWarning(true)
+      }
+
+      // get the converted colorscheme
+      const colorscheme = getColorscheme()
+      // call webassembly
+      processImage(colorscheme)
     }
   }, [buffer, selMethod, selColors, imageSize.width, imageSize.height])
 
@@ -114,7 +155,16 @@ const Faerber = () => {
       <Head>
         <title>farbenfroh.io :: faerber</title>
       </Head>
-      <div className="h-full">
+      <div className="relative h-full">
+        <div className="fixed z-50 w-full">
+          {showWarning && (
+            <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 rounded-md bg-peach p-4 text-xl text-crust shadow-lg">
+              <Alert className="h-12 w-12" />
+              You have used quite a large image. This may take a while, and your
+              browser might freeze, depending on your hardware.
+            </div>
+          )}
+        </div>
         <div className="pt-8 text-center md:p-0">
           <h1 className="bg-clip-text p-4 font-lobster text-8xl text-pink">
             faerber
@@ -152,7 +202,14 @@ const Faerber = () => {
               className="max-h-full max-w-full"
             ></canvas>
           </div>
-          <div className="flex aspect-video w-full items-center justify-center border border-crust bg-mantle p-4">
+          <div className="relative flex aspect-video w-full items-center justify-center border border-crust bg-mantle p-4">
+            {loading && (
+              <div className="absolute inset-0 flex w-full items-center justify-center">
+                <div className="rounded-full bg-crust">
+                  <Gear className="h-24 w-24 animate-spin p-4 text-pink" />
+                </div>
+              </div>
+            )}
             <canvas
               id="resultCanvas"
               ref={resultCanvasRef}
@@ -213,9 +270,20 @@ const Faerber = () => {
                     id="customColorAdd"
                     ref={customColorRef}
                     className="bg-surface2"
+                    onChange={(e) => {
+                      const color = e.target.value.replace('#', '')
+                      const length = color.length
+                      if (length >= 6) {
+                        e.target.value = '#' + color.slice(0, 6)
+                      }
+                    }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        addCustomColor()
+                      const color = e.target.value.replace('#', '')
+                      const length = color.length
+                      if (length === 6) {
+                        if (e.key === 'Enter') {
+                          addCustomColor()
+                        }
                       }
                     }}
                   />

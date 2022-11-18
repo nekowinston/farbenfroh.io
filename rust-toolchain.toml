@@ -1,0 +1,5 @@
+[toolchain]
+channel = "nightly-2022-11-17"
+targets = [ "wasm32-unknown-unknown" ]
+profile = "minimal"
+components = [ "rustfmt", "rust-src" ]

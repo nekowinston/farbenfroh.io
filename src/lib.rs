@@ -1,9 +1,12 @@
-use deltae::*;
-use image::{EncodableLayout, ImageBuffer, Pixel, RgbaImage};
-use lab::Lab;
+pub mod custom_lab;
+
+use crate::custom_lab::Lab;
+use deltae::{DEMethod, DeltaE};
+use image::buffer::Pixels;
+use image::{ImageBuffer, Rgba, RgbaImage};
+use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::{Clamped, JsCast};
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
+pub use wasm_bindgen_rayon::init_thread_pool;
 
 #[wasm_bindgen]
 extern "C" {
@@ -11,133 +14,89 @@ extern "C" {
     fn log(msg: &str);
 }
 
-#[derive(Copy, Clone)]
-struct MyLab {
-    l: f32,
-    a: f32,
-    b: f32,
-}
-impl MyLab {}
-
-impl From<MyLab> for LabValue {
-    fn from(my_lab: MyLab) -> Self {
-        LabValue {
-            l: my_lab.l,
-            a: my_lab.a,
-            b: my_lab.b,
-        }
-    }
-}
-
-impl<D: Delta + Copy> DeltaEq<D> for MyLab {}
-
 #[wasm_bindgen]
 pub fn process(
     buffer: Vec<u8>,
     width: u32,
     height: u32,
     method: String,
-    palette: &[u8],
-    target_canvas: String,
-) {
+    palette: &[u32],
+) -> Vec<u8> {
+    // RGBA, because ImageData always has 4 values for each pixel, R G B A
+    // we'll drop the 4th (alpha) later, so it's not used.
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
 
-    let convert_method: DEMethod;
-    if method == "76" {
-        convert_method = deltae::DE1976
-    } else if method == "94t" || method == "94" {
-        convert_method = deltae::DE1994T
-    } else if method == "94g" {
-        convert_method = deltae::DE1994G
-    } else if method == "2000" {
-        convert_method = deltae::DE2000
+    // parse the deltaE method
+    let convert_method = parse_delta_e_method(method);
+    // convert the user's RGB palette to LAB
+    let labs = convert_palette_to_lab(palette);
+
+    return convert(img, convert_method, &labs);
+}
+
+pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
+    palette
+        .iter()
+        .map(|color| {
+            let r = ((color >> 16) & 0xFF) as u8;
+            let g = ((color >> 8) & 0xFF) as u8;
+            let b = (color & 0xFF) as u8;
+            Lab::from_rgb(&[r, g, b])
+        })
+        .collect()
+}
+
+pub fn parse_delta_e_method(method: String) -> DEMethod {
+    return match method.as_str() {
+        "76" => deltae::DE1976,
+        "94t" => deltae::DE1976,
+        "94g" => deltae::DE1976,
+        "2000" => deltae::DE1976,
+        _ => deltae::DE1976,
+    };
+}
+
+pub fn convert(img: RgbaImage, convert_method: DEMethod, labs: &Vec<Lab>) -> Vec<u8> {
+    // convert the RGBA pixels in the image to LAB values
+    let img_labs = rgba_pixels_to_labs(img.pixels());
+
+    // loop over each LAB in the LAB-converted image:
+    // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
+    return if convert_method != DEMethod::DE2000 {
+        img_labs
+            .iter()
+            .map(|lab| convert_loop(convert_method, labs, lab))
+            .flatten()
+            .collect()
     } else {
-        convert_method = deltae::DE1976
-    }
+        img_labs
+            .par_iter()
+            .map(|lab| convert_loop(convert_method, labs, lab))
+            .flatten()
+            .collect()
+    };
+}
 
-    let mut labs = vec![];
-    for (i, _e) in palette.iter().enumerate().step_by(3) {
-        let val1 = palette[i + 0];
-        let val2 = palette[i + 1];
-        let val3 = palette[i + 2];
-        labs.push(Lab::from_rgb(&[val1, val2, val3]));
-    }
+pub fn rgba_pixels_to_labs(img_pixels: Pixels<Rgba<u8>>) -> Vec<Lab> {
+    img_pixels.map(|pixel| Lab::from_rgba(&pixel.0)).collect()
+}
 
-    // map the colors of the image to the LAB space
-    let img_pixels = img.pixels();
-    let img_labs = img_pixels.map(|pixel| {
-        let rgb = [
-            pixel.channels()[0],
-            pixel.channels()[1],
-            pixel.channels()[2],
-        ];
-        return Lab::from_rgb(&rgb);
-    });
+pub fn convert_loop(convert_method: DEMethod, palette: &Vec<Lab>, lab: &Lab) -> [u8; 4] {
+    // keep track of the closest color
+    let mut closest_color: Lab = Default::default();
+    // keep track of the closest distance measured, initially set as high as possible
+    let mut closest_distance: f32 = f32::MAX;
 
-    let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id(&target_canvas).unwrap();
-    let canvas: web_sys::HtmlCanvasElement = canvas
-        .dyn_into::<HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
+    // loop over each LAB in the user's palette, and find the closest color
+    for color in palette {
+        let delta = DeltaE::new(lab.clone(), color.clone(), convert_method);
 
-    canvas.set_width(width);
-    canvas.set_height(height);
-
-    let context = canvas
-        .get_context("2d")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<CanvasRenderingContext2d>()
-        .unwrap();
-
-    let iter_colors = labs.clone();
-    let mut buffer_data = vec![];
-
-    for lab in img_labs {
-        let labv = LabValue {
-            a: lab.a,
-            b: lab.b,
-            l: lab.l,
-        };
-
-        // keep track of the closest color
-        let mut closest_color: LabValue = LabValue {
-            a: 0.0,
-            b: 0.0,
-            l: 0.0,
-        };
-        let mut closest_distance: f32 = 1000.0;
-        for color in &iter_colors {
-            let colorv = LabValue {
-                a: color.a,
-                b: color.b,
-                l: color.l,
-            };
-            let delta = DeltaE::new(&labv, &colorv, convert_method);
-            let deltav = delta.value();
-
-            if deltav < &closest_distance {
-                closest_color = colorv.clone();
-                closest_distance = deltav.clone();
-            }
+        if delta.value() < &closest_distance {
+            closest_color = color.clone();
+            closest_distance = delta.value().clone()
         }
-
-        // convert the LAB back to RGB
-        let lab = Lab {
-            a: closest_color.a,
-            b: closest_color.b,
-            l: closest_color.l,
-        };
-        let rgb = lab.to_rgb();
-        // push flattened rgb to buffer
-        buffer_data.push(rgb[0]);
-        buffer_data.push(rgb[1]);
-        buffer_data.push(rgb[2]);
-        buffer_data.push(255);
     }
 
-    let data = buffer_data.as_bytes();
-    let data = ImageData::new_with_u8_clamped_array_and_sh(Clamped(data), width, height).unwrap();
-    context.put_image_data(&data, 0 as f64, 0 as f64).unwrap();
+    // convert the LAB back to RGBA
+    closest_color.to_rgba()
 }
