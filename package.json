@@ -33,25 +33,27 @@
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {
-    "next": "^12.1.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "styled-components": "^5.3.3",
-    "styled-icons": "^10.45.0"
+    "next": "^13.0.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.0",
-    "@tailwindcss/typography": "^0.5.2",
-    "autoprefixer": "^10.4.2",
-    "eslint": "^8.9.0",
-    "eslint-config-next": "^12.1.0",
-    "eslint-config-prettier": "^8.3.0",
-    "husky": ">=6",
-    "lint-staged": ">=10",
-    "postcss": "^8.4.6",
-    "prettier": "^2.5.1",
-    "prettier-plugin-tailwindcss": "^0.1.7",
-    "tailwind-styled-components": "^2.1.4",
-    "tailwindcss": "^3.0.23"
+    "@catppuccin/tailwindcss": "^0.1.1",
+    "@svg-icons/bootstrap": "^1.86.0",
+    "@svg-icons/fa-brands": "^1.86.0",
+    "@svg-icons/octicons": "^1.86.0",
+    "@svgr/webpack": "^6.5.1",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.8",
+    "autoprefixer": "^10.4.13",
+    "eslint": "^8.27.0",
+    "eslint-config-next": "^13.0.3",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.3",
+    "postcss": "^8.4.19",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
+    "tailwindcss": "^3.2.4"
   }
 }

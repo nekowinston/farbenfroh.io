@@ -1,3 +1,60 @@
+@import url(https://fonts.bunny.net/css?family=fira-code:500,700|inter:500,700|lobster:400);
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .index-container {
+        animation: index-gradient-animation 30s ease infinite;
+        background: linear-gradient(270deg, #45dce4, #bd85ea, #ea858d);
+        background-size: 600% 600%;
+        @apply flex flex-col items-center justify-center h-screen;
+    }
+
+    .index-logo {
+        font-family: 'Lobster', cursive;
+        background: linear-gradient(
+                270deg,
+                hsl(206, 100%, 20%),
+                hsl(289, 100%, 20%),
+                hsl(36, 100%, 20%)
+        );
+        background-size: 600% 600%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        animation: index-gradient-animation 30s ease infinite;
+        @apply p-8 text-transparent text-6xl lg:text-8xl;
+    }
+
+    /*.anim-gradient {*/
+    /*    background: linear-gradient(*/
+    /*            300deg,*/
+    /*            rgb(var(--ctp-red)),*/
+    /*            rgb(var(--ctp-peach)),*/
+    /*            rgb(var(--ctp-yellow)),*/
+    /*            rgb(var(--ctp-green)),*/
+    /*            rgb(var(--ctp-blue)),*/
+    /*            rgb(var(--ctp-mauve))*/
+    /*    );*/
+    /*    background-size: 360% 360%;*/
+    /*    animation: gradient-animation 36s ease infinite;*/
+    /*}*/
+
+    @keyframes gradient-animation {
+        0% {
+            background-position: 0 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0 50%;
+        }
+    }
+
+    @keyframes index-gradient-animation {
+        0% { background-position: 0 74%; }
+        50% { background-position: 100% 27%; }
+        100% { background-position: 0 74%; }
+    }
+}

@@ -1,21 +1,20 @@
-import { Arrow90degUp } from '@styled-icons/bootstrap/Arrow90degUp'
-import { Download, Trash, Upload } from '@styled-icons/octicons'
+import Arrow90degUp from '@svg-icons/bootstrap/arrow-90deg-up.svg'
+import Save from '@svg-icons/bootstrap/save.svg'
+import Trash from '@svg-icons/octicons/trash.svg'
+import AddImage from '@svg-icons/bootstrap/file-earmark-image.svg'
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
-import tw from 'tailwind-styled-components'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
 import { process } from '../pkg'
-
-const Button = tw.button`
-m-2 inline-block rounded bg-slate-500 p-2
-`
 
 const Faerber = () => {
   const previewCanvasRef = useRef()
   const resultCanvasRef = useRef()
   const customColorRef = useRef()
-  const [selColors, setSelColors] = useState(colorSchemePresets['Dracula'])
+  const [selColors, setSelColors] = useState(
+    colorSchemePresets['Catppuccin Mocha']
+  )
   const [selMethod, setSelMethod] = useState('76')
   const [buffer, setBuffer] = useState(null)
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
@@ -88,7 +87,7 @@ const Faerber = () => {
       selColors.forEach((val) => {
         val = val.replace('#', '')
         const rgb = [val.slice(0, 2), val.slice(2, 4), val.slice(4, 6)]
-        rgb.map((v) => (v = flat.push(parseInt(v, 16))))
+        rgb.map((v) => flat.push(parseInt(v, 16)))
       })
       return new Uint8Array(flat)
     }
@@ -115,22 +114,25 @@ const Faerber = () => {
       <Head>
         <title>farbenfroh.io :: faerber</title>
       </Head>
-      <div className="h-full bg-slate-800 text-gray-100">
+      <div className="h-full">
         <div className="pt-8 text-center md:p-0">
-          <h1 className="bg-gradient-to-r from-pink-500 to-violet-400 bg-clip-text p-4 font-lobster text-8xl text-transparent">
+          <h1 className="bg-clip-text p-4 font-lobster text-8xl text-pink">
             faerber
           </h1>
-          <h2 className="my-2 text-2xl">
+          <h2 className="my-2 text-2xl text-pink">
             Makes your wallpaper fit your favorite colorscheme!
           </h2>
-          <p className="prose mx-auto max-w-md text-gray-200">
+          <p className="prose mx-auto max-w-md text-text">
             When you spent a lot of time tweaking your OS, you don{"'"}t want to
             just grab any old wallpaper that might not fit your favorite look.
             Drop it here, and it might just look great!
           </p>
         </div>
         <div className="py-4 text-center">
-          <Button $as="label" htmlFor="inputImage">
+          <label
+            htmlFor="inputImage"
+            className="m-2 inline-block cursor-pointer rounded bg-surface2 p-2"
+          >
             <input
               type="file"
               accept="image/png,image/webp,image/jpeg"
@@ -139,18 +141,18 @@ const Faerber = () => {
               className="sr-only"
               onChange={(e) => loadImage(e)}
             />
-            <Upload className="h-5 w-5" />
-            Upload
-          </Button>
+            <AddImage className="mr-2 inline-block h-5 w-5" />
+            Select image
+          </label>
         </div>
         <div className="flex flex-col items-center justify-center gap-1 p-2 lg:flex-row">
-          <div className="flex aspect-video w-full items-center justify-center border border-gray-600 bg-gray-800 p-4">
+          <div className="flex aspect-video w-full items-center justify-center border border-crust bg-mantle p-4">
             <canvas
               ref={previewCanvasRef}
               className="max-h-full max-w-full"
             ></canvas>
           </div>
-          <div className="flex aspect-video w-full items-center justify-center border border-gray-600 bg-gray-800 p-4">
+          <div className="flex aspect-video w-full items-center justify-center border border-crust bg-mantle p-4">
             <canvas
               id="resultCanvas"
               ref={resultCanvasRef}
@@ -160,24 +162,27 @@ const Faerber = () => {
         </div>
         {downloadable && (
           <div className="py-4 text-center">
-            <Button onClick={() => downloadResult()}>
-              <Download className="h-5 w-5"></Download>
-              <span>Download</span>
-            </Button>
+            <div
+              onClick={() => downloadResult()}
+              className="m-2 inline-block cursor-pointer rounded bg-surface2 p-2"
+            >
+              <Save className="mr-2 inline-block h-5 w-5"></Save>
+              <span>Save image</span>
+            </div>
           </div>
         )}
         <div>
           <div className="mx-auto max-w-6xl ">
-            <h3 className="mx-auto max-w-fit rounded-t-lg border border-b-0 border-slate-500 bg-slate-700 px-4 text-center text-xl">
+            <h3 className="mx-auto max-w-fit rounded-t-lg border border-b-0 border-surface1 bg-surface2 px-4 text-center text-xl">
               Colors to match against:
             </h3>
-            <div className="divide-y divide-dashed divide-slate-400 overflow-hidden rounded-xl border border-slate-500 bg-slate-700 shadow-lg">
+            <div className="divide-y divide-dashed divide-surface1 overflow-hidden rounded-xl border border-surface1 bg-mantle shadow-lg">
               <div className="pb-2">
                 <div className="grid grid-cols-4 font-mono">
                   {selColors.map((el, i) => (
                     <div
                       key={i}
-                      className="group relative flex items-center justify-center border-slate-800/30 p-2 transition-[shadow,transform] hover:z-10 hover:scale-105 hover:shadow"
+                      className="group relative flex items-center justify-center p-2 transition-[shadow,transform] hover:z-10 hover:scale-105 hover:shadow"
                       style={{ background: `${el}` }}
                     >
                       <span
@@ -198,7 +203,7 @@ const Faerber = () => {
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-center gap-2 py-2">
+                <div className="flex flex-col justify-center gap-2 py-2 px-8 md:flex-row md:px-0">
                   <label className="flex items-center" htmlFor="customColorAdd">
                     <Arrow90degUp className="mr-1 h-4 w-4 -translate-y-0.5" />
                     Custom color
@@ -207,7 +212,7 @@ const Faerber = () => {
                     type="text"
                     id="customColorAdd"
                     ref={customColorRef}
-                    className="bg-slate-500"
+                    className="bg-surface2"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         addCustomColor()
@@ -215,7 +220,7 @@ const Faerber = () => {
                     }}
                   />
                   <button
-                    className="bg-slate-500 px-2"
+                    className="bg-surface2 px-2"
                     onClick={() => addCustomColor()}
                   >
                     Add
@@ -226,11 +231,11 @@ const Faerber = () => {
                 <p className="pb-2 text-lg">
                   Here are some colorscheme presets for you:
                 </p>
-                <div className="flex justify-center gap-3">
+                <div className="m-4 grid grid-cols-2 justify-center gap-3 md:grid-cols-5">
                   {Object.keys(colorSchemePresets).map((preset) => (
                     <button
                       key={preset}
-                      className="rounded bg-slate-600 p-1 transition-[transform,shadow] hover:-translate-y-1 hover:scale-110 hover:shadow-lg"
+                      className="rounded bg-surface2 p-1 transition-[transform,shadow] hover:-translate-y-1 hover:scale-110 hover:shadow-lg"
                       onClick={() => setSelColors(colorSchemePresets[preset])}
                     >
                       {preset}
@@ -261,7 +266,7 @@ const Faerber = () => {
                   <select
                     id="methodSelector"
                     name="methodSelector"
-                    className="mt-1 block w-full rounded-md border-gray-300 bg-slate-700 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     defaultValue={selMethod}
                     onChange={(e) => setSelMethod(e.target.value)}
                   >
@@ -271,7 +276,7 @@ const Faerber = () => {
                     <option value="2000">Delta E 2000</option>
                   </select>
                 </div>
-                <p className="prose-lg p-4 text-gray-100">
+                <p className="prose-lg p-4 text-text">
                   The color comparison method is how the algorithm calculates
                   the difference between each pixel in your image & the limited
                   colors in your colorscheme. The numbers correspond to the
@@ -287,7 +292,7 @@ const Faerber = () => {
         </div>
         <div className="p-4 text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
           a project by{' '}
-          <a href="https://github.com/nekowinston" className="text-blue-800">
+          <a href="https://github.com/nekowinston" className="text-blue">
             winston 🤘
           </a>
         </div>
