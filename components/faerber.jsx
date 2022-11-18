@@ -95,9 +95,7 @@ const Faerber = () => {
           type: 'module',
         })
       )
-    })().then(() => {
-      console.log(workerRef.current)
-    })
+    })().then(() => {})
     return () => {
       workerRef.current?.terminate()
     }
