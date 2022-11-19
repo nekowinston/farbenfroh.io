@@ -5,11 +5,12 @@ import init, { initThreadPool, process } from '../pkg/faerber'
   init()
     .then((e) => {
       console.log('initialized', e)
-      initThreadPool(navigator.hardwareConcurrency)
+      const threads = navigator.hardwareConcurrency;
+      initThreadPool(threads)
         .then(() => {
           console.log(
             'thread pool initialized with',
-            navigator.hardwareConcurrency,
+            threads,
             'threads.'
           )
         })

@@ -42,9 +42,31 @@ pub fn process(
             _ => "unknown",
         }
     ));
+
     let multithreading = multithreading == 2 || (multithreading == 1 && method == DEMethod::DE2000);
 
-    convert(img, method, &labs, multithreading)
+    // convert the RGBA pixels in the image to LAB values
+    let img_labs = rgba_pixels_to_labs(img.pixels());
+
+    let max_chunk_size = 3000000;
+
+    // let lab_chunks: Vec<&[Lab]> = labs.chunks(max_chunk_size).collect(); // references; better
+    let lab_chunks: Vec<Vec<Lab>> = img_labs.chunks(max_chunk_size).map(|s| s.into()).collect(); // copies; not good
+
+    log(&format!(
+        "Created {} chunks of max {} pixels",
+        lab_chunks.len(),
+        max_chunk_size
+    ));
+
+    let result: Vec<Vec<u8>> = lab_chunks
+        .iter()
+        .map(|img_labs| convert(img_labs, method, &labs, multithreading))
+        .collect();
+
+    // convert(img, method, &labs, multithreading)
+    log("conversion done");
+    result.concat()
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
@@ -69,21 +91,19 @@ pub fn parse_delta_e_method(method: String) -> DEMethod {
     }
 }
 
-pub fn convert(img: RgbaImage, method: DEMethod, labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
-    // convert the RGBA pixels in the image to LAB values
-    let img_labs = rgba_pixels_to_labs(img.pixels());
-    log(&format!("Using {} threads", rayon::current_num_threads()));
+pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
 
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
+
     if multithreading {
-        log("multithreading");
+        log(&format!("processing new chunk using {} threads", rayon::current_num_threads()));
         img_labs
             .par_iter()
             .flat_map(|lab| convert_loop(method, labs, lab))
             .collect()
     } else {
-        log("Not multithreading");
+        log("processing new chunk using single thread");
         img_labs
             .iter()
             .flat_map(|lab| convert_loop(method, labs, lab))
