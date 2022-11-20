@@ -26,11 +26,12 @@ pub fn process(
     // RGBA, because ImageData always has 4 values for each pixel, R G B A
     // we'll drop the 4th (alpha) later, so it's not used.
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
-
     // parse the deltaE method
     let method = parse_delta_e_method(method);
     // convert the user's RGB palette to LAB
-    let labs = convert_palette_to_lab(palette);
+    let pallete_labs = convert_palette_to_lab(palette);
+    // convert the RGBA pixels in the image to LAB values
+    let img_labs = rgba_pixels_to_labs(img.pixels());
 
     log(&format!(
         "Method: {}. Using multithreading: {}",
@@ -45,28 +46,7 @@ pub fn process(
 
     let multithreading = multithreading == 2 || (multithreading == 1 && method == DEMethod::DE2000);
 
-    // convert the RGBA pixels in the image to LAB values
-    let img_labs = rgba_pixels_to_labs(img.pixels());
-
-    let max_chunk_size = 3000000;
-
-    // let lab_chunks: Vec<&[Lab]> = labs.chunks(max_chunk_size).collect(); // references; better
-    let lab_chunks: Vec<Vec<Lab>> = img_labs.chunks(max_chunk_size).map(|s| s.into()).collect(); // copies; not good
-
-    log(&format!(
-        "Created {} chunks of max {} pixels",
-        lab_chunks.len(),
-        max_chunk_size
-    ));
-
-    let result: Vec<Vec<u8>> = lab_chunks
-        .iter()
-        .map(|img_labs| convert(img_labs, method, &labs, multithreading))
-        .collect();
-
-    // convert(img, method, &labs, multithreading)
-    log("conversion done");
-    result.concat()
+    convert(&img_labs, method, &pallete_labs, multithreading)
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
@@ -91,7 +71,34 @@ pub fn parse_delta_e_method(method: String) -> DEMethod {
     }
 }
 
-pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
+pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
+
+    // chunk of size greater than max_chunk_size crash parallel processing in wasm (observation)
+    let max_chunk_size = 3000000;
+
+    // split into smaller chunks; can we do better using slices intead of allocating new copies?
+    let img_labs_chunks: Vec<Vec<Lab>> = img_labs.chunks(max_chunk_size).map(|s| s.into()).collect();
+
+    log(&format!(
+        "Created {} chunks of max {} pixels",
+        img_labs_chunks.len(),
+        max_chunk_size
+    ));
+
+    // process chunks sequentially whereas each chunk is converted in parallel using rayon
+    let result: Vec<Vec<u8>> = img_labs_chunks
+        .iter()
+        .map(|img_labs| convert_chunk(img_labs, method, &pallete_labs, multithreading))
+        .collect();
+
+    let result = result.concat();
+
+    log("conversion done");
+
+    return result;
+}
+
+pub fn convert_chunk(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
 
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
@@ -100,13 +107,13 @@ pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, labs: &Vec<Lab>, multithre
         log(&format!("processing new chunk using {} threads", rayon::current_num_threads()));
         img_labs
             .par_iter()
-            .flat_map(|lab| convert_loop(method, labs, lab))
+            .flat_map(|lab| convert_loop(method, pallete_labs, lab))
             .collect()
     } else {
-        log("processing new chunk using single thread");
+        log("processing new chunk using a single thread");
         img_labs
             .iter()
-            .flat_map(|lab| convert_loop(method, labs, lab))
+            .flat_map(|lab| convert_loop(method, pallete_labs, lab))
             .collect()
     }
 }
