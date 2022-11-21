@@ -8,6 +8,8 @@ use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
+const MAX_CHUNK_SIZE: usize = 3000000;
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
@@ -26,10 +28,13 @@ pub fn process(
     // RGBA, because ImageData always has 4 values for each pixel, R G B A
     // we'll drop the 4th (alpha) later, so it's not used.
     let img: RgbaImage = ImageBuffer::from_vec(width, height, buffer).unwrap();
+
     // parse the deltaE method
     let method = parse_delta_e_method(method);
-    // convert the user's RGB palette to LAB
+
+    // convert the user's RGB palette to LAB values
     let pallete_labs = convert_palette_to_lab(palette);
+
     // convert the RGBA pixels in the image to LAB values
     let img_labs = rgba_pixels_to_labs(img.pixels());
 
@@ -45,8 +50,14 @@ pub fn process(
     ));
 
     let multithreading = multithreading == 2 || (multithreading == 1 && method == DEMethod::DE2000);
+    let chunking = multithreading && img_labs.len() > MAX_CHUNK_SIZE;
 
-    convert(&img_labs, method, &pallete_labs, multithreading)
+    if chunking {
+        convert_by_chunking(&img_labs, method, &pallete_labs)
+    } else {
+        convert(&img_labs, method, &pallete_labs, multithreading)
+    }
+
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
@@ -71,46 +82,38 @@ pub fn parse_delta_e_method(method: String) -> DEMethod {
     }
 }
 
-pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
+pub fn convert_by_chunking(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>) -> Vec<u8> {
 
-    // chunk of size greater than max_chunk_size crash parallel processing in wasm (observation)
-    let max_chunk_size = 3000000;
-
-    // split into smaller chunks; can we do better using slices intead of allocating new copies?
-    let img_labs_chunks: Vec<Vec<Lab>> = img_labs.chunks(max_chunk_size).map(|s| s.into()).collect();
+    // split into smaller vector copies; will it perform better with readonly slices?
+    let img_labs_chunks: Vec<Vec<Lab>> = img_labs.chunks(MAX_CHUNK_SIZE).map(|s| s.into()).collect();
 
     log(&format!(
         "Created {} chunks of max {} pixels",
-        img_labs_chunks.len(),
-        max_chunk_size
+        img_labs_chunks.len(), MAX_CHUNK_SIZE
     ));
 
     // process chunks sequentially whereas each chunk is converted in parallel using rayon
     let result: Vec<Vec<u8>> = img_labs_chunks
         .iter()
-        .map(|img_labs| convert_chunk(img_labs, method, &pallete_labs, multithreading))
+        .map(|img_labs| convert(img_labs, method, &pallete_labs, true))
         .collect();
 
-    let result = result.concat();
-
-    log("conversion done");
-
-    return result;
+    result.concat()
 }
 
-pub fn convert_chunk(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
+pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
 
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
 
     if multithreading {
-        log(&format!("processing new chunk using {} threads", rayon::current_num_threads()));
+        log(&format!("multithreading using {} threads", rayon::current_num_threads()));
         img_labs
             .par_iter()
             .flat_map(|lab| convert_loop(method, pallete_labs, lab))
             .collect()
     } else {
-        log("processing new chunk using a single thread");
+        log("Not multithreading");
         img_labs
             .iter()
             .flat_map(|lab| convert_loop(method, pallete_labs, lab))
