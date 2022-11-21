@@ -1,5 +1,8 @@
 pub mod custom_lab;
 
+#[macro_use]
+extern crate lazy_static;
+
 use crate::custom_lab::Lab;
 use deltae::{DEMethod, DeltaE};
 use image::buffer::Pixels;
@@ -8,11 +11,23 @@ use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
+lazy_static! {
+    static ref METHOD_STRINGS: std::collections::HashMap<String, DEMethod> = {
+        let mut m = std::collections::HashMap::new();
+        m.insert("76".to_string(), DEMethod::DE1976);
+        m.insert("94g".to_string(), DEMethod::DE1994T);
+        m.insert("94t".to_string(), DEMethod::DE1994T);
+        m.insert("2000".to_string(), DEMethod::DE2000);
+        m
+    };
+}
+
 const MAX_CHUNK_SIZE: usize = 3000000;
 
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
+    #[cfg(debug_assertions)]
     fn log(msg: &str);
 }
 
@@ -38,6 +53,7 @@ pub fn process(
     // convert the RGBA pixels in the image to LAB values
     let img_labs = rgba_pixels_to_labs(img.pixels());
 
+    #[cfg(debug_assertions)]
     log(&format!(
         "Method: {}. Using multithreading: {}",
         method,
@@ -57,7 +73,6 @@ pub fn process(
     } else {
         convert(&img_labs, method, &pallete_labs, multithreading)
     }
-
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
@@ -73,23 +88,23 @@ pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
 }
 
 pub fn parse_delta_e_method(method: String) -> DEMethod {
-    match method.as_str() {
-        "76" => deltae::DE1976,
-        "94t" => deltae::DE1994T,
-        "94g" => deltae::DE1994G,
-        "2000" => deltae::DE2000,
-        _ => deltae::DE1994G,
-    }
+    *METHOD_STRINGS.get(&method).unwrap_or(&DEMethod::DE1994G)
 }
 
-pub fn convert_by_chunking(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>) -> Vec<u8> {
-
+pub fn convert_by_chunking(
+    img_labs: &Vec<Lab>,
+    method: DEMethod,
+    pallete_labs: &Vec<Lab>,
+) -> Vec<u8> {
     // split into smaller vector copies; will it perform better with readonly slices?
-    let img_labs_chunks: Vec<Vec<Lab>> = img_labs.chunks(MAX_CHUNK_SIZE).map(|s| s.into()).collect();
+    let img_labs_chunks: Vec<Vec<Lab>> =
+        img_labs.chunks(MAX_CHUNK_SIZE).map(|s| s.into()).collect();
 
+    #[cfg(debug_assertions)]
     log(&format!(
         "Created {} chunks of max {} pixels",
-        img_labs_chunks.len(), MAX_CHUNK_SIZE
+        img_labs_chunks.len(),
+        MAX_CHUNK_SIZE
     ));
 
     // process chunks sequentially whereas each chunk is converted in parallel using rayon
@@ -101,19 +116,30 @@ pub fn convert_by_chunking(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: 
     result.concat()
 }
 
-pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
-
+pub fn convert(
+    img_labs: &Vec<Lab>,
+    method: DEMethod,
+    pallete_labs: &Vec<Lab>,
+    multithreading: bool,
+) -> Vec<u8> {
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
 
     if multithreading {
-        log(&format!("multithreading using {} threads", rayon::current_num_threads()));
+        #[cfg(debug_assertions)]
+        log(&format!(
+            "multithreading using {} threads",
+            rayon::current_num_threads()
+        ));
+
         img_labs
             .par_iter()
             .flat_map(|lab| convert_loop(method, pallete_labs, lab))
             .collect()
     } else {
-        log("Not multithreading");
+        #[cfg(debug_assertions)]
+        log("not multithreading");
+
         img_labs
             .iter()
             .flat_map(|lab| convert_loop(method, pallete_labs, lab))
