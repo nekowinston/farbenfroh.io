@@ -22,10 +22,12 @@ import init, { initThreadPool, process } from '../pkg/faerber'
     })
 })()
 
-export const obj: {
+export type FaerberWorker = {
   data: Uint8Array
   process: typeof process
-} = {
+}
+
+export const worker: FaerberWorker = {
   data: new Uint8Array(),
   process(buf, width, height, deltaEMethod, colors, multithreading) {
     console.log(
@@ -48,4 +50,4 @@ export const obj: {
   },
 }
 
-Comlink.expose(obj)
+Comlink.expose(worker)

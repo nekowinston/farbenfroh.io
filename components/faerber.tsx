@@ -9,7 +9,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
 import * as Comlink from 'comlink'
-import type * as FaerberWorker from '../lib/worker'
+import type { FaerberWorker } from '../lib/worker'
 
 type ImageSize = {
   width: number
@@ -32,7 +32,7 @@ const Faerber: React.FC = (): JSX.Element => {
   )
   const [selMethod, setSelMethod] = useState<DEMethod>('1976')
   const [selMulti, setSelMulti] = useState<MultiThreadOption>(1)
-  const [buffer, setBuffer] = useState<ArrayBuffer>(new ArrayBuffer(0))
+  const [buffer, setBuffer] = useState<ArrayBuffer | null>()
   const [imageSize, setImageSize] = useState<ImageSize>({
     width: 0,
     height: 0,
@@ -40,7 +40,7 @@ const Faerber: React.FC = (): JSX.Element => {
   const [downloadable, setDownloadable] = useState<Boolean>(false)
   const [showWarning, setShowWarning] = useState<Boolean>(false)
   const [loading, setLoading] = useState<Boolean>(false)
-  const workerRef = useRef<Comlink.Remote<Worker & typeof FaerberWorker.obj>>()
+  const workerRef = useRef<Comlink.Remote<Worker & FaerberWorker>>()
 
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +136,7 @@ const Faerber: React.FC = (): JSX.Element => {
       if (!worker) return null
       const resultCtx = resultCanvasRef.current?.getContext('2d')
       if (!resultCtx) return null
+      if (!buffer) return null
 
       await worker.process(
         new Uint8Array(buffer),
