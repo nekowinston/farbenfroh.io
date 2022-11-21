@@ -69,7 +69,7 @@ pub fn process(
     let chunking = multithreading && img_labs.len() > MAX_CHUNK_SIZE;
 
     if chunking {
-        convert_by_chunking(&img_labs, method, &pallete_labs)
+        convert_by_chunking(img_labs, method, &pallete_labs)
     } else {
         convert(&img_labs, method, &pallete_labs, multithreading)
     }
@@ -92,7 +92,7 @@ pub fn parse_delta_e_method(method: String) -> DEMethod {
 }
 
 pub fn convert_by_chunking(
-    img_labs: &Vec<Lab>,
+    img_labs: Vec<Lab>,
     method: DEMethod,
     pallete_labs: &Vec<Lab>,
 ) -> Vec<u8> {
@@ -110,7 +110,7 @@ pub fn convert_by_chunking(
     // process chunks sequentially whereas each chunk is converted in parallel using rayon
     let result: Vec<Vec<u8>> = img_labs_chunks
         .iter()
-        .map(|img_labs| convert(img_labs, method, &pallete_labs, true))
+        .map(|img_labs| convert(img_labs, method, pallete_labs, true))
         .collect();
 
     result.concat()
