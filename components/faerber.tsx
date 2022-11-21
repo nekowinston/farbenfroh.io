@@ -23,16 +23,16 @@ enum MultiThreadOption {
   Always,
 }
 
-const Faerber = () => {
-  const previewCanvasRef = useRef<HTMLCanvasElement>()
-  const resultCanvasRef = useRef<HTMLCanvasElement>()
-  const customColorRef = useRef<HTMLInputElement>()
+const Faerber: React.FC = (): JSX.Element => {
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+  const resultCanvasRef = useRef<HTMLCanvasElement>(null)
+  const customColorRef = useRef<HTMLInputElement>(null)
   const [selColors, setSelColors] = useState(
     colorSchemePresets['Catppuccin Mocha']
   )
   const [selMethod, setSelMethod] = useState<DEMethod>('1976')
   const [selMulti, setSelMulti] = useState<MultiThreadOption>(1)
-  const [buffer, setBuffer] = useState<ArrayBuffer>(null)
+  const [buffer, setBuffer] = useState<ArrayBuffer>(new ArrayBuffer(0))
   const [imageSize, setImageSize] = useState<ImageSize>({
     width: 0,
     height: 0,
@@ -45,12 +45,14 @@ const Faerber = () => {
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     // clear the previous canvas & reset the buffer state
-    previewCanvasRef.current
-      .getContext('2d')
-      .clearRect(0, 0, imageSize.width, imageSize.height)
-    setBuffer(null)
+    const previewCanvas = previewCanvasRef.current
+    const previewCtx = previewCanvasRef.current?.getContext('2d')
+    if (!previewCanvas || !previewCtx) return null
+    previewCtx.clearRect(0, 0, imageSize.width, imageSize.height)
+    setBuffer(new ArrayBuffer(0))
 
-    const file = e.target.files[0]
+    const file = e.target.files?.[0]
+    if (!file) return null
     const reader = new FileReader()
     reader.readAsDataURL(file)
 
@@ -59,15 +61,13 @@ const Faerber = () => {
       img.src = reader.result as any
       img.onload = () => {
         // create an ImageData object
-        const canvas = previewCanvasRef.current
-        const ctx = canvas.getContext('2d')
-        const imgData = ctx.createImageData(img.width, img.height)
-        canvas.width = img.width
-        canvas.height = img.height
+        const imgData = previewCtx.createImageData(img.width, img.height)
+        previewCanvas.width = img.width
+        previewCanvas.height = img.height
         setImageSize({ width: img.width, height: img.height })
         // copy the image contents to the ImageData object
-        ctx.drawImage(img, 0, 0)
-        const pix = ctx.getImageData(0, 0, img.width, img.height).data
+        previewCtx.drawImage(img, 0, 0)
+        const pix = previewCtx.getImageData(0, 0, img.width, img.height).data
         for (let i = 0; i < pix.length; i += 4) {
           imgData.data[i] = pix[i]
           imgData.data[i + 1] = pix[i + 1]
@@ -75,14 +75,18 @@ const Faerber = () => {
           imgData.data[i + 3] = 255
         }
         // set the ImageData object to the canvas
-        ctx.putImageData(imgData, 0, 0)
+        previewCtx.putImageData(imgData, 0, 0)
         setBuffer(imgData.data)
       }
     }
   }
 
   const downloadResult = () => {
-    resultCanvasRef.current.getContext('2d').canvas.toBlob((blob) => {
+    const resultCanvas = resultCanvasRef.current
+    const resultCtx = resultCanvasRef.current?.getContext('2d')
+    if (!resultCanvas || !resultCtx) return null
+    resultCtx.canvas.toBlob((blob) => {
+      if (!blob) return null
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
@@ -94,7 +98,8 @@ const Faerber = () => {
   }
 
   const addCustomColor = () => {
-    const color = customColorRef.current.value
+    const color = customColorRef.current?.value
+    if (!color) return null
     const regex = /^#[\dA-F]{6}$/i
     const alreadyExists = selColors.find((c) => c === color)
     if (regex.test(color) && !alreadyExists) {
@@ -106,14 +111,14 @@ const Faerber = () => {
   }
 
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       workerRef.current = Comlink.wrap(
         new Worker(new URL('../lib/worker.ts', import.meta.url), {
           type: 'module',
           credentials: 'omit',
         })
       )
-    })().then(() => { })
+    })().then(() => {})
     return () => {
       workerRef.current?.terminate()
     }
@@ -127,7 +132,12 @@ const Faerber = () => {
     }
 
     const processImage = async (colorscheme: number[]) => {
-      await workerRef.current.process(
+      const worker = workerRef.current
+      if (!worker) return null
+      const resultCtx = resultCanvasRef.current?.getContext('2d')
+      if (!resultCtx) return null
+
+      await worker.process(
         new Uint8Array(buffer),
         imageSize.width,
         imageSize.height,
@@ -135,19 +145,14 @@ const Faerber = () => {
         new Uint32Array(colorscheme),
         selMulti
       )
-      const data = await workerRef.current.data
-      // set the result canvas
-      console.log(data.length)
-      console.dir(data)
       const imgData = new ImageData(
-        new Uint8ClampedArray(data),
+        new Uint8ClampedArray(await worker.data),
         imageSize.width,
         imageSize.height
       )
-      const ctx = resultCanvasRef.current.getContext('2d')
-      ctx.canvas.width = imageSize.width
-      ctx.canvas.height = imageSize.height
-      ctx.putImageData(imgData, 0, 0)
+      resultCtx.canvas.width = imageSize.width
+      resultCtx.canvas.height = imageSize.height
+      resultCtx.putImageData(imgData, 0, 0)
       setShowWarning(false)
       setDownloadable(true)
       setLoading(false)
