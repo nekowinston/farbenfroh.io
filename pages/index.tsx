@@ -1,7 +1,8 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import React from 'react'
 
-const Home = () => {
+const Home: React.FC = (): JSX.Element => {
   return (
     <>
       <Head>
@@ -11,9 +12,9 @@ const Home = () => {
       <div className="index-container text-crust">
         <div className="index-logo">farbenfroh.io</div>
         <div className="my-4 text-center">
-          <p className="text-lg text-mantle">/ˈfarbənfroː/</p>
-          <p className="text-xs text-mantle">[adjective]</p>
-          <p className="text-xl font-bold text-crust">full of colour</p>
+          <p className="text-mantle text-lg">/ˈfarbənfroː/</p>
+          <p className="text-mantle text-xs">[adjective]</p>
+          <p className="text-crust text-xl font-bold">full of colour</p>
         </div>
         <div className="text-2xl">
           <span>

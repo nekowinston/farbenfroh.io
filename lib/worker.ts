@@ -1,6 +1,6 @@
 import * as Comlink from 'comlink'
 
-import init, { initThreadPool, process } from '../pkg'
+import init, { initThreadPool, process } from '../pkg/faerber'
 ;(async () => {
   init()
     .then((e) => {
@@ -22,8 +22,11 @@ import init, { initThreadPool, process } from '../pkg'
     })
 })()
 
-const obj = {
-  data: [],
+export const obj: {
+  data: Uint8Array
+  process: typeof process
+} = {
+  data: new Uint8Array(),
   process(buf, width, height, deltaEMethod, colors, multithreading) {
     console.log(
       `${width}x${height} (${width * height} pixels), ${
@@ -40,7 +43,7 @@ const obj = {
       multithreading
     )
     let endTime = performance.now()
-    console.log(`processing took ${endTime - startTime} ms`)
+    console.log(`processing took ${(endTime - startTime) / 1000} s`)
     return this.data
   },
 }

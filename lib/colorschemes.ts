@@ -1,4 +1,4 @@
-export const colorSchemePresets = {
+export const colorSchemePresets: Record<string, string[]> = {
   'Catppuccin Ultra': [
     '#f5e0dc',
     '#f2cdcd',

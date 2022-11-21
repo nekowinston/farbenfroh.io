@@ -1,12 +1,21 @@
 import styles from './Octocat.module.css'
+import React from 'react'
 
-const Octocat = ({
+type props = {
+  catColor?: string
+  bgColor?: string
+  repository?: string
+  label?: string
+  isPride?: boolean
+}
+
+const Octocat: React.FC<props> = ({
   catColor = '#000',
   bgColor = '#fff',
   repository = '',
   label = 'View source on GitHub',
   isPride = false,
-}) => {
+}): JSX.Element => {
   return (
     <a
       href={`https://github.com/${repository}`}
@@ -45,7 +54,7 @@ const Octocat = ({
 const PrideGradient = () => {
   return (
     <linearGradient id="prideGradient" x2="1" y2="1">
-      <stop offset="0%" stopColor="#f00000" />
+      <stop offset="0%" stopColor="var(--ctp-red)" />
       <stop offset="16.67%" stopColor="#f00000" />
       <stop offset="16.67%" stopColor="#ff8000" />
       <stop offset="33.33%" stopColor="#ff8000" />

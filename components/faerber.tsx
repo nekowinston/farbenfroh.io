@@ -5,29 +5,45 @@ import AddImage from '@svg-icons/bootstrap/file-earmark-image.svg'
 import Gear from '@svg-icons/bootstrap/gear.svg'
 import Alert from '@svg-icons/bootstrap/exclamation-diamond-fill.svg'
 import Head from 'next/head'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { calculateContrastColor } from '../lib/colormath'
 import { colorSchemePresets } from '../lib/colorschemes'
 import * as Comlink from 'comlink'
+import type * as FaerberWorker from '../lib/worker'
+
+type ImageSize = {
+  width: number
+  height: number
+}
+
+type DEMethod = '1976' | '1994g' | '1994t' | '2000'
+enum MultiThreadOption {
+  Never,
+  Smart,
+  Always,
+}
 
 const Faerber = () => {
-  const previewCanvasRef = useRef()
-  const resultCanvasRef = useRef()
-  const customColorRef = useRef()
+  const previewCanvasRef = useRef<HTMLCanvasElement>()
+  const resultCanvasRef = useRef<HTMLCanvasElement>()
+  const customColorRef = useRef<HTMLInputElement>()
   const [selColors, setSelColors] = useState(
     colorSchemePresets['Catppuccin Mocha']
   )
-  const [selMethod, setSelMethod] = useState('76')
-  const [selMulti, setSelMulti] = useState('1')
-  const [buffer, setBuffer] = useState(null)
-  const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
-  const [downloadable, setDownloadable] = useState(false)
-  const [showWarning, setShowWarning] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const workerRef = useRef()
+  const [selMethod, setSelMethod] = useState<DEMethod>('1976')
+  const [selMulti, setSelMulti] = useState<MultiThreadOption>(1)
+  const [buffer, setBuffer] = useState<ArrayBuffer>(null)
+  const [imageSize, setImageSize] = useState<ImageSize>({
+    width: 0,
+    height: 0,
+  })
+  const [downloadable, setDownloadable] = useState<Boolean>(false)
+  const [showWarning, setShowWarning] = useState<Boolean>(false)
+  const [loading, setLoading] = useState<Boolean>(false)
+  const workerRef = useRef<Comlink.Remote<Worker & typeof FaerberWorker.obj>>()
 
   // loads the uploaded image to a blob & displays it in the preview
-  const loadImage = (e) => {
+  const loadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     // clear the previous canvas & reset the buffer state
     previewCanvasRef.current
       .getContext('2d')
@@ -39,8 +55,8 @@ const Faerber = () => {
     reader.readAsDataURL(file)
 
     reader.onloadend = () => {
-      const img = new Image()
-      img.src = reader.result
+      const img: HTMLImageElement = new Image()
+      img.src = reader.result as any
       img.onload = () => {
         // create an ImageData object
         const canvas = previewCanvasRef.current
@@ -90,37 +106,39 @@ const Faerber = () => {
   }
 
   useEffect(() => {
-    ;(async () => {
-      workerRef.current = await Comlink.wrap(
-        new Worker(new URL('../lib/worker.js', import.meta.url), {
+    ; (async () => {
+      workerRef.current = Comlink.wrap(
+        new Worker(new URL('../lib/worker.ts', import.meta.url), {
           type: 'module',
+          credentials: 'omit',
         })
       )
-    })().then(() => {})
+    })().then(() => { })
     return () => {
       workerRef.current?.terminate()
     }
   }, [])
 
   useEffect(() => {
-    const getColorscheme = () => {
-      return selColors.map((color) => {
-        const hex = color.replace('#', '')
-        return parseInt(hex, 16)
+    const getColorscheme = (): number[] => {
+      return selColors.map((color: string) => {
+        return parseInt(color.replace('#', ''), 16)
       })
     }
 
-    const processImage = async (colorscheme) => {
+    const processImage = async (colorscheme: number[]) => {
       await workerRef.current.process(
-        buffer,
+        new Uint8Array(buffer),
         imageSize.width,
         imageSize.height,
         selMethod,
-        colorscheme,
+        new Uint32Array(colorscheme),
         selMulti
       )
       const data = await workerRef.current.data
       // set the result canvas
+      console.log(data.length)
+      console.dir(data)
       const imgData = new ImageData(
         new Uint8ClampedArray(data),
         imageSize.width,
@@ -145,7 +163,9 @@ const Faerber = () => {
       // get the converted colorscheme
       const colorscheme = getColorscheme()
       // call webassembly
-      processImage(colorscheme)
+      processImage(colorscheme).then(() =>
+        console.debug('[DEBUG] processImage() finished')
+      )
     }
   }, [
     buffer,
@@ -284,7 +304,7 @@ const Faerber = () => {
                       }
                     }}
                     onKeyDown={(e) => {
-                      const color = e.target.value.replace('#', '')
+                      const color = e.currentTarget.value.replace('#', '')
                       const length = color.length
                       if (length === 6) {
                         if (e.key === 'Enter') {
@@ -344,11 +364,13 @@ const Faerber = () => {
                         name="methodSelector"
                         className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMethod}
-                        onChange={(e) => setSelMethod(e.target.value)}
+                        onChange={(e) =>
+                          setSelMethod(e.target.value as DEMethod)
+                        }
                       >
-                        <option value="76">Delta E 76</option>
-                        <option value="94t">Delta E 94-T</option>
-                        <option value="94g">Delta E 94-G</option>
+                        <option value="1976">Delta E 76</option>
+                        <option value="1994t">Delta E 94-T</option>
+                        <option value="1994g">Delta E 94-G</option>
                         <option value="2000">Delta E 2000</option>
                       </select>
                     </div>
@@ -361,7 +383,11 @@ const Faerber = () => {
                         name="multiThreadingSelector"
                         className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMulti}
-                        onChange={(e) => setSelMulti(e.target.value)}
+                        onChange={(e) =>
+                          setSelMulti(
+                            Number(e.target.value) as MultiThreadOption
+                          )
+                        }
                       >
                         <option value="0">Never</option>
                         <option value="1">Smart</option>

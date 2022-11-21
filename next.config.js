@@ -1,3 +1,12 @@
+/** @type string */
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self';
+  child-src example.com;
+  style-src 'self' example.com;
+  font-src 'self';  
+`
+
 const securityHeaders = [
   {
     key: 'Cross-Origin-Opener-Policy',
@@ -9,6 +18,7 @@ const securityHeaders = [
   },
 ]
 
+/** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: process.env.NODE_ENV !== 'development',
   async headers() {
