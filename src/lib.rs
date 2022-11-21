@@ -33,7 +33,8 @@ pub fn process(
     let labs = convert_palette_to_lab(palette);
 
     log(&format!(
-        "Using multithreading: {}",
+        "Method: {}. Using multithreading: {}",
+        method,
         match multithreading {
             0 => "off",
             1 => "smart",

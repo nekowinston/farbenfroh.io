@@ -1,4 +1,4 @@
-export const rgbToHsl = (r, g, b) => {
+export const rgbToHsl = (r: number, g: number, b: number): number[] => {
   r /= 255
   g /= 255
   b /= 255
@@ -15,7 +15,7 @@ export const rgbToHsl = (r, g, b) => {
   return [h * 60, s, l]
 }
 
-export const hslToRgb = (h, s, l) => {
+export const hslToRgb = (h: number, s: number, l: number): number[] => {
   let c = (1 - Math.abs(2 * l - 1)) * s
   let hp = h / 60.0
   let x = c * (1 - Math.abs((hp % 2) - 1))
@@ -35,12 +35,17 @@ export const hslToRgb = (h, s, l) => {
   ]
 }
 
-export const calculateContrastColor = (rrggbb) => {
+export const calculateContrastColor = (
+  hexColor: string,
+  dark: string = '#000000',
+  light: string = '#ffffff'
+): string => {
   // clean up the string if necessary
-  let rgb = rrggbb.replace('#', '')
+  let rgb = hexColor.replace('#', '')
   let r = parseInt(rgb.slice(0, 2), 16)
   let g = parseInt(rgb.slice(2, 4), 16)
   let b = parseInt(rgb.slice(4, 6), 16)
+  // determine the lightness of the color
   let l = (r * 299 + g * 587 + b * 114) / 1000
-  return l >= 128 ? '#000000' : '#ffffff'
+  return l >= 128 ? dark : light
 }
