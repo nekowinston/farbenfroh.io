@@ -49,7 +49,7 @@
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "autoprefixer": "^10.4.13",
-    "eslint": "^8.27.0",
+    "eslint": "^8.28.0",
     "eslint-config-next": "^13.0.4",
     "eslint-config-prettier": "^8.5.0",
     "husky": "^8.0.2",
