@@ -5,7 +5,7 @@ export const rgbToHsl = (r: number, g: number, b: number): number[] => {
   let max = Math.max(r, g, b)
   let min = Math.min(r, g, b)
   let d = max - min
-  let h
+  let h = 0
   if (d === 0) h = 0
   else if (max === r) h = ((g - b) / d) % 6
   else if (max === g) h = (b - r) / d + 2
@@ -19,7 +19,7 @@ export const hslToRgb = (h: number, s: number, l: number): number[] => {
   let c = (1 - Math.abs(2 * l - 1)) * s
   let hp = h / 60.0
   let x = c * (1 - Math.abs((hp % 2) - 1))
-  let rgb1
+  let rgb1: number[] = []
   if (isNaN(h)) rgb1 = [0, 0, 0]
   else if (hp <= 1) rgb1 = [c, x, 0]
   else if (hp <= 2) rgb1 = [x, c, 0]
