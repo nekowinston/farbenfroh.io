@@ -1,5 +1,8 @@
 pub mod custom_lab;
 
+#[macro_use]
+extern crate lazy_static;
+
 use crate::custom_lab::Lab;
 use deltae::{DEMethod, DeltaE};
 use image::buffer::Pixels;
@@ -8,9 +11,21 @@ use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
+lazy_static! {
+    static ref METHOD_STRINGS: std::collections::HashMap<String, DEMethod> = {
+        let mut m = std::collections::HashMap::new();
+        m.insert("76".to_string(), DEMethod::DE1976);
+        m.insert("94g".to_string(), DEMethod::DE1994T);
+        m.insert("94t".to_string(), DEMethod::DE1994T);
+        m.insert("2000".to_string(), DEMethod::DE2000);
+        m
+    };
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
+    #[cfg(debug_assertions)]
     fn log(msg: &str);
 }
 
@@ -32,6 +47,7 @@ pub fn process(
     // convert the user's RGB palette to LAB
     let labs = convert_palette_to_lab(palette);
 
+    #[cfg(debug_assertions)]
     log(&format!(
         "Method: {}. Using multithreading: {}",
         method,
@@ -60,30 +76,30 @@ pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
 }
 
 pub fn parse_delta_e_method(method: String) -> DEMethod {
-    match method.as_str() {
-        "76" => deltae::DE1976,
-        "94t" => deltae::DE1994T,
-        "94g" => deltae::DE1994G,
-        "2000" => deltae::DE2000,
-        _ => deltae::DE1994G,
-    }
+    *METHOD_STRINGS.get(&method).unwrap_or(&DEMethod::DE1994G)
 }
 
 pub fn convert(img: RgbaImage, method: DEMethod, labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
     // convert the RGBA pixels in the image to LAB values
     let img_labs = rgba_pixels_to_labs(img.pixels());
+
+    #[cfg(debug_assertions)]
     log(&format!("Using {} threads", rayon::current_num_threads()));
 
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
     if multithreading {
+        #[cfg(debug_assertions)]
         log("multithreading");
+
         img_labs
             .par_iter()
             .flat_map(|lab| convert_loop(method, labs, lab))
             .collect()
     } else {
+        #[cfg(debug_assertions)]
         log("Not multithreading");
+
         img_labs
             .iter()
             .flat_map(|lab| convert_loop(method, labs, lab))
