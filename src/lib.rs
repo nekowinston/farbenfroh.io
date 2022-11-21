@@ -8,6 +8,8 @@ use rayon::prelude::*;
 use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
+const MAX_CHUNK_SIZE: usize = 3000000;
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
@@ -29,8 +31,12 @@ pub fn process(
 
     // parse the deltaE method
     let method = parse_delta_e_method(method);
-    // convert the user's RGB palette to LAB
-    let labs = convert_palette_to_lab(palette);
+
+    // convert the user's RGB palette to LAB values
+    let pallete_labs = convert_palette_to_lab(palette);
+
+    // convert the RGBA pixels in the image to LAB values
+    let img_labs = rgba_pixels_to_labs(img.pixels());
 
     log(&format!(
         "Method: {}. Using multithreading: {}",
@@ -42,9 +48,16 @@ pub fn process(
             _ => "unknown",
         }
     ));
-    let multithreading = multithreading == 2 || (multithreading == 1 && method == DEMethod::DE2000);
 
-    convert(img, method, &labs, multithreading)
+    let multithreading = multithreading == 2 || (multithreading == 1 && method == DEMethod::DE2000);
+    let chunking = multithreading && img_labs.len() > MAX_CHUNK_SIZE;
+
+    if chunking {
+        convert_by_chunking(&img_labs, method, &pallete_labs)
+    } else {
+        convert(&img_labs, method, &pallete_labs, multithreading)
+    }
+
 }
 
 pub fn convert_palette_to_lab(palette: &[u32]) -> Vec<Lab> {
@@ -69,24 +82,41 @@ pub fn parse_delta_e_method(method: String) -> DEMethod {
     }
 }
 
-pub fn convert(img: RgbaImage, method: DEMethod, labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
-    // convert the RGBA pixels in the image to LAB values
-    let img_labs = rgba_pixels_to_labs(img.pixels());
-    log(&format!("Using {} threads", rayon::current_num_threads()));
+pub fn convert_by_chunking(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>) -> Vec<u8> {
+
+    // split into smaller vector copies; will it perform better with readonly slices?
+    let img_labs_chunks: Vec<Vec<Lab>> = img_labs.chunks(MAX_CHUNK_SIZE).map(|s| s.into()).collect();
+
+    log(&format!(
+        "Created {} chunks of max {} pixels",
+        img_labs_chunks.len(), MAX_CHUNK_SIZE
+    ));
+
+    // process chunks sequentially whereas each chunk is converted in parallel using rayon
+    let result: Vec<Vec<u8>> = img_labs_chunks
+        .iter()
+        .map(|img_labs| convert(img_labs, method, &pallete_labs, true))
+        .collect();
+
+    result.concat()
+}
+
+pub fn convert(img_labs: &Vec<Lab>, method: DEMethod, pallete_labs: &Vec<Lab>, multithreading: bool) -> Vec<u8> {
 
     // loop over each LAB in the LAB-converted image:
     // benchmarks have shown that only DeltaE 2000 benefits from parallel processing with rayon
+
     if multithreading {
-        log("multithreading");
+        log(&format!("multithreading using {} threads", rayon::current_num_threads()));
         img_labs
             .par_iter()
-            .flat_map(|lab| convert_loop(method, labs, lab))
+            .flat_map(|lab| convert_loop(method, pallete_labs, lab))
             .collect()
     } else {
         log("Not multithreading");
         img_labs
             .iter()
-            .flat_map(|lab| convert_loop(method, labs, lab))
+            .flat_map(|lab| convert_loop(method, pallete_labs, lab))
             .collect()
     }
 }
