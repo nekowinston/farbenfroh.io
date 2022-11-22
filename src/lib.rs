@@ -14,9 +14,9 @@ pub use wasm_bindgen_rayon::init_thread_pool;
 lazy_static! {
     static ref METHOD_STRINGS: std::collections::HashMap<String, DEMethod> = {
         let mut m = std::collections::HashMap::new();
-        m.insert("76".to_string(), DEMethod::DE1976);
-        m.insert("94g".to_string(), DEMethod::DE1994T);
-        m.insert("94t".to_string(), DEMethod::DE1994T);
+        m.insert("1976".to_string(), DEMethod::DE1976);
+        m.insert("1994g".to_string(), DEMethod::DE1994T);
+        m.insert("1994t".to_string(), DEMethod::DE1994T);
         m.insert("2000".to_string(), DEMethod::DE2000);
         m
     };
