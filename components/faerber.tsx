@@ -4,11 +4,14 @@ import Trash from '@svg-icons/octicons/trash.svg'
 import AddImage from '@svg-icons/bootstrap/file-earmark-image.svg'
 import Gear from '@svg-icons/bootstrap/gear.svg'
 import Alert from '@svg-icons/bootstrap/exclamation-diamond-fill.svg'
+import * as Comlink from 'comlink'
 import Head from 'next/head'
+import cx from 'classnames'
+
 import React, { useEffect, useRef, useState } from 'react'
 import { calculateContrastColor } from '../lib/colormath'
+import { useLocalStorage } from 'usehooks-ts'
 import { colorSchemePresets } from '../lib/colorschemes'
-import * as Comlink from 'comlink'
 import type { FaerberWorker } from '../lib/worker'
 
 type ImageSize = {
@@ -27,20 +30,30 @@ const Faerber: React.FC = (): JSX.Element => {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const resultCanvasRef = useRef<HTMLCanvasElement>(null)
   const customColorRef = useRef<HTMLInputElement>(null)
-  const [selColors, setSelColors] = useState(
-    colorSchemePresets['Catppuccin Mocha']
-  )
-  const [selMethod, setSelMethod] = useState<DEMethod>('1976')
-  const [selMulti, setSelMulti] = useState<MultiThreadOption>(1)
+  const workerRef = useRef<Comlink.Remote<Worker & FaerberWorker>>()
+
+  const [downloadable, setDownloadable] = useState<Boolean>(false)
+  const [showWarning, setShowWarning] = useState<Boolean>(false)
+  const [loading, setLoading] = useState<Boolean>(false)
+
+  const [selColors, setSelColors] = useState<string[]>([])
   const [buffer, setBuffer] = useState<ArrayBuffer | null>()
   const [imageSize, setImageSize] = useState<ImageSize>({
     width: 0,
     height: 0,
   })
-  const [downloadable, setDownloadable] = useState<Boolean>(false)
-  const [showWarning, setShowWarning] = useState<Boolean>(false)
-  const [loading, setLoading] = useState<Boolean>(false)
-  const workerRef = useRef<Comlink.Remote<Worker & FaerberWorker>>()
+
+  const [selPreset, setSelPreset] = useLocalStorage<string[]>('preset', [
+    'Catppuccin Mocha',
+  ])
+  const [selMethod, setSelMethod] = useLocalStorage<DEMethod>(
+    'deMethod',
+    '1976'
+  )
+  const [selMulti, setSelMulti] = useLocalStorage<MultiThreadOption>(
+    'multithreading',
+    1
+  )
 
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,6 +123,33 @@ const Faerber: React.FC = (): JSX.Element => {
     }
   }
 
+  // called when the preset is changed
+  useEffect(() => {
+    let colors: string[] = []
+    selPreset.forEach((preset) => {
+      colors = [...colors, ...colorSchemePresets[preset]]
+    })
+    setSelColors(colors)
+  }, [selPreset])
+
+  const handlePresetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const preset = e.currentTarget.innerText
+
+    // check that the preset name actually exists
+    if (!colorSchemePresets.hasOwnProperty(preset)) return null
+
+    if (e.shiftKey) {
+      if (selPreset.includes(preset)) {
+        setSelPreset(selPreset.filter((p) => p !== preset))
+      } else {
+        setSelPreset([...selPreset, preset])
+      }
+    } else {
+      setSelPreset([preset])
+    }
+  }
+
+  // onMount
   useEffect(() => {
     ;(async () => {
       workerRef.current = Comlink.wrap(
@@ -124,6 +164,7 @@ const Faerber: React.FC = (): JSX.Element => {
     }
   }, [])
 
+  // called when the user changes image/parameters
   useEffect(() => {
     const getColorscheme = (): number[] => {
       return selColors.map((color: string) => {
@@ -198,9 +239,7 @@ const Faerber: React.FC = (): JSX.Element => {
           )}
         </div>
         <div className="pt-8 text-center md:p-0">
-          <h1 className="bg-clip-text p-4 font-lobster text-8xl text-pink">
-            faerber
-          </h1>
+          <h1 className="p-4 font-lobster text-8xl text-pink">faerber</h1>
           <h2 className="my-2 text-2xl text-pink">
             Makes your wallpaper fit your favorite colorscheme!
           </h2>
@@ -267,7 +306,7 @@ const Faerber: React.FC = (): JSX.Element => {
             </h3>
             <div className="divide-y divide-dashed divide-surface1 overflow-hidden rounded-xl border border-surface1 bg-mantle shadow-lg">
               <div className="pb-2">
-                <div className="grid grid-cols-4 font-mono">
+                <div className="grid max-h-80 grid-cols-4 overflow-y-auto overflow-x-hidden font-mono">
                   {selColors.map((el, i) => (
                     <div
                       key={i}
@@ -304,18 +343,14 @@ const Faerber: React.FC = (): JSX.Element => {
                     className="bg-surface2"
                     onChange={(e) => {
                       const color = e.target.value.replace('#', '')
-                      const length = color.length
-                      if (length >= 6) {
+                      if (color.length >= 6) {
                         e.target.value = '#' + color.slice(0, 6)
                       }
                     }}
                     onKeyDown={(e) => {
                       const color = e.currentTarget.value.replace('#', '')
-                      const length = color.length
-                      if (length === 6) {
-                        if (e.key === 'Enter') {
-                          addCustomColor()
-                        }
+                      if (color.length === 6 && e.key === 'Enter') {
+                        addCustomColor()
                       }
                     }}
                   />
@@ -328,22 +363,31 @@ const Faerber: React.FC = (): JSX.Element => {
                 </div>
               </div>
               <div className="py-2 text-center">
-                <p className="pb-2 text-lg">
+                <p className="text-lg">
                   Here are some colorscheme presets for you:
                 </p>
                 <div className="m-4 grid grid-cols-2 justify-center gap-3 md:grid-cols-5">
                   {Object.keys(colorSchemePresets).map((preset) => (
                     <button
                       key={preset}
-                      className="rounded bg-surface2 p-1 transition-[transform,shadow] hover:-translate-y-1 hover:scale-110 hover:shadow-lg"
-                      onClick={() => setSelColors(colorSchemePresets[preset])}
+                      className={cx(
+                        'rounded bg-surface2 p-1 hover:outline hover:outline-pink/60',
+                        {
+                          'outline outline-pink': selPreset.includes(preset),
+                        }
+                      )}
+                      onClick={handlePresetClick}
                     >
                       {preset}
                     </button>
                   ))}
                 </div>
-                <div className="mt-1 text-sm">
-                  <p>Your favorite colorscheme is missing? 🙀</p>
+                <p className="text-sm text-subtext0">
+                  You can hold <kbd>Shift</kbd> while pressing presets to
+                  combine them.
+                </p>
+                <div className="text-sm text-subtext0">
+                  <p>Your favorite colorscheme is missing?</p>
                   <p>
                     How about you{' '}
                     <a
@@ -395,9 +439,9 @@ const Faerber: React.FC = (): JSX.Element => {
                           )
                         }
                       >
-                        <option value="0">Never</option>
-                        <option value="1">Smart</option>
-                        <option value="2">Always</option>
+                        <option value={MultiThreadOption.Never}>Never</option>
+                        <option value={MultiThreadOption.Smart}>Smart</option>
+                        <option value={MultiThreadOption.Always}>Always</option>
                       </select>
                     </div>
                   </div>
