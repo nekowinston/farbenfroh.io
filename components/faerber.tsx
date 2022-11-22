@@ -347,7 +347,7 @@ const Faerber: React.FC = (): JSX.Element => {
                   <p>
                     How about you{' '}
                     <a
-                      href="https://github.com/farbenfroh/farbenfroh.io"
+                      href="https://github.com/nekowinston/farbenfroh.io"
                       className="underline"
                       target={'_blank'}
                       rel="noreferrer"
