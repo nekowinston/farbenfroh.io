@@ -17,6 +17,9 @@ jobs:
 
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2022-11-17
+          target: wasm32-unknown-unknown
 
       - uses: Swatinem/rust-cache@v2
 
