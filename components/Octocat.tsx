@@ -54,7 +54,7 @@ const Octocat: React.FC<props> = ({
 const PrideGradient = () => {
   return (
     <linearGradient id="prideGradient" x2="1" y2="1">
-      <stop offset="0%" stopColor="var(--ctp-red)" />
+      <stop offset="0%" stopColor="#f00000" />
       <stop offset="16.67%" stopColor="#f00000" />
       <stop offset="16.67%" stopColor="#ff8000" />
       <stop offset="33.33%" stopColor="#ff8000" />
