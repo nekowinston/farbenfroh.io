@@ -163,7 +163,8 @@ pub fn convert_loop(method: DEMethod, palette: &Vec<Lab>, lab: &Lab) -> [u8; 4] 
 
         if delta.value() < &closest_distance {
             closest_color = *color;
-            closest_distance = *delta.value();
+            closest_color.alpha = lab.alpha;
+            closest_distance = *delta.value()
         }
     }
 
