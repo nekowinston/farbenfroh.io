@@ -55,6 +55,47 @@ const Faerber: React.FC = (): JSX.Element => {
     1
   )
 
+  const handlePaste = async (event: React.ClipboardEvent<HTMLDivElement>) => {
+    const text = event.clipboardData.getData('text/plain')
+    let file: File | null = null
+
+    if (text.startsWith('https://')) {
+      await fetch(text)
+        .then(async (res) => {
+          const blob = await res.blob()
+          const type = res.headers.get('content-type') ?? 'image/png'
+          const filename =
+            text.split('/').pop() ?? `unknown.${type.split('/')[1]}`
+
+          if (res.ok) {
+            file = new File([blob], filename, { type })
+          }
+        })
+        .catch((err) => console.log(err))
+    } else if (event.clipboardData.files[0] !== null) {
+      file = event.clipboardData.files[0]
+    } else {
+      return
+    }
+
+    if (file) {
+      console.log(file)
+      const previewCanvas = previewCanvasRef.current
+      const previewCtx = previewCanvasRef.current?.getContext('2d')
+      if (!previewCanvas || !previewCtx) return
+      previewCtx.clearRect(0, 0, imageSize.width, imageSize.height)
+      setBuffer(new ArrayBuffer(0))
+
+      if (!file) return null
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+
+      reader.onloadend = () => {
+        onImageLoad(reader, previewCanvas, previewCtx)
+      }
+    }
+  }
+
   // loads the uploaded image to a blob & displays it in the preview
   const loadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     // clear the previous canvas & reset the buffer state
@@ -70,27 +111,30 @@ const Faerber: React.FC = (): JSX.Element => {
     reader.readAsDataURL(file)
 
     reader.onloadend = () => {
-      const img: HTMLImageElement = new Image()
-      img.src = reader.result as any
-      img.onload = () => {
-        // create an ImageData object
-        const imgData = previewCtx.createImageData(img.width, img.height)
-        previewCanvas.width = img.width
-        previewCanvas.height = img.height
-        setImageSize({ width: img.width, height: img.height })
-        // copy the image contents to the ImageData object
-        previewCtx.drawImage(img, 0, 0)
-        const pix = previewCtx.getImageData(0, 0, img.width, img.height).data
-        for (let i = 0; i < pix.length; i += 4) {
-          imgData.data[i] = pix[i]
-          imgData.data[i + 1] = pix[i + 1]
-          imgData.data[i + 2] = pix[i + 2]
-          imgData.data[i + 3] = 255
-        }
-        // set the ImageData object to the canvas
-        previewCtx.putImageData(imgData, 0, 0)
-        setBuffer(imgData.data)
-      }
+      onImageLoad(reader, previewCanvas, previewCtx)
+    }
+  }
+
+  // loads the uploaded image to a blob & displays it in the preview
+  const onImageLoad = (
+    reader: FileReader,
+    previewCanvas: HTMLCanvasElement,
+    previewCtx: CanvasRenderingContext2D
+  ) => {
+    const img: HTMLImageElement = new Image()
+    img.src = reader.result as any
+    img.onload = () => {
+      // create an ImageData object
+      const imgData = previewCtx.createImageData(img.width, img.height)
+      previewCanvas.width = img.width
+      previewCanvas.height = img.height
+      setImageSize({ width: img.width, height: img.height })
+      // copy the image contents to the ImageData object
+      previewCtx.drawImage(img, 0, 0)
+      const pix = previewCtx.getImageData(0, 0, img.width, img.height).data
+      pix.map((_, i) => (imgData.data[i] = pix[i]))
+      previewCtx.putImageData(imgData, 0, 0)
+      setBuffer(imgData.data)
     }
   }
 
@@ -228,7 +272,7 @@ const Faerber: React.FC = (): JSX.Element => {
       <Head>
         <title>farbenfroh.io :: faerber</title>
       </Head>
-      <div className="relative h-full">
+      <div className="relative h-full" onPaste={handlePaste}>
         <div className="fixed z-50 w-full">
           {showWarning && (
             <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 rounded-md bg-peach p-4 text-xl text-crust shadow-lg">
