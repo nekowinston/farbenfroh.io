@@ -25,8 +25,6 @@
         };
       in {
         devShells.default = pkgs.mkShell {
-          inherit (self.checks.${system}.pre-commit-check) shellHook;
-
           buildInputs = with pkgs; [
             (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
             binaryen
@@ -35,6 +33,9 @@
             wasm-pack
             yarn
           ];
+          shellHook = ''
+            ${self.checks.${system}.pre-commit-check.shellHook}
+          '';
         };
 
         checks = {
