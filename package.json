@@ -11,7 +11,7 @@
     "build": "yarn build:wasm; next build",
     "build:wasm": "wasm-pack build --target web --release",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint && cargo clippy --target wasm32-unknown-unknown",
     "export": "next export",
     "prepare": "husky install"
   },
