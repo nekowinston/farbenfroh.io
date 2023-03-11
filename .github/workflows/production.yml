@@ -31,7 +31,7 @@ jobs:
         with:
           components: clippy, rustfmt
           targets: wasm32-unknown-unknown
-          toolchain: nightly-2022-03-10
+          toolchain: nightly-2023-03-10
 
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
