@@ -6037,7 +6037,7 @@ __metadata:
     next: ^13.2.4
     postcss: ^8.4.21
     prettier: ^2.8.4
-    prettier-plugin-tailwindcss: ^0.2.4
+    prettier-plugin-tailwindcss: ^0.2.5
     react: 18.2.0
     react-dom: 18.2.0
     tailwindcss: ^3.2.7
@@ -9563,9 +9563,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-tailwindcss@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "prettier-plugin-tailwindcss@npm:0.2.4"
+"prettier-plugin-tailwindcss@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "prettier-plugin-tailwindcss@npm:0.2.5"
   peerDependencies:
     "@ianvs/prettier-plugin-sort-imports": "*"
     "@prettier/plugin-php": "*"
@@ -9614,7 +9614,7 @@ __metadata:
       optional: true
     prettier-plugin-twig-melody:
       optional: true
-  checksum: 9f74d1c80e9151636c748baac13e736a81ae47fa2b2aaf66f9e4691a619a565439780c39491dccb1d0df4846a011b1d69c882e733ed20525d93a84c345b8321d
+  checksum: 44ae325d40ad747dd8fb36e1d7986de1919b9bd912993628c18f4743c9287b1add6dd2d951ed336b1031a2ad49c7ba5eb50e4be6d3b9b37e0da7fd137d13ec53
   languageName: node
   linkType: hard
 
