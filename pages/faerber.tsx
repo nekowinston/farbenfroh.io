@@ -9,11 +9,13 @@ const Faerber: ComponentType = dynamic(() => import('../components/faerber'), {
 export default function Page() {
   return (
     <div className="bg-base">
-      <Octocat
-        catColor="#1e293b"
-        isPride={true}
-        repository="nekowinston/farbenfroh.io"
-      />
+      <div className="relative z-50">
+        <Octocat
+          catColor="#1e293b"
+          isPride={true}
+          repository="nekowinston/farbenfroh.io"
+        />
+      </div>
       <Faerber />
     </div>
   )
