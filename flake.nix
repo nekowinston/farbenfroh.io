@@ -29,6 +29,8 @@
             (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
             binaryen
             nodejs-18_x
+            openssl
+            pkg-config
             wasm-bindgen-cli
             wasm-pack
             yarn
