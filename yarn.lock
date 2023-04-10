@@ -3102,14 +3102,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.32":
-  version: 18.0.32
-  resolution: "@types/react@npm:18.0.32"
+"@types/react@npm:^18.0.34":
+  version: 18.0.34
+  resolution: "@types/react@npm:18.0.34"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: c8dbce83c455e520e75f3649988f46100e3a3c0bf7241281ea5bd9067a0368290f0d7c6102e12e6ec9d649134b29a3ef4c421f376ec5aa06ed78cbdd8c144b4c
+  checksum: 60d2766e7644ec480075bbb154bf8fb8476089466b643662ef59964e27cae2d8c71fd9c717a4dfa9627c3e050fa2ae866d10d16f66b4509058d1bfe2a564b18c
   languageName: node
   linkType: hard
 
@@ -6154,7 +6154,7 @@ __metadata:
     "@tailwindcss/forms": ^0.5.3
     "@tailwindcss/typography": ^0.5.9
     "@types/node": ^18.15.11
-    "@types/react": ^18.0.32
+    "@types/react": ^18.0.34
     autoprefixer: ^10.4.14
     classnames: ^2.3.2
     comlink: ^4.4.1
