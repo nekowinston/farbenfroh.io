@@ -35,7 +35,7 @@
   "dependencies": {
     "classnames": "^2.3.2",
     "comlink": "^4.4.1",
-    "next": "^13.2.4",
+    "next": "^13.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "usehooks-ts": "^2.9.1"
