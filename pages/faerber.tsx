@@ -13,7 +13,7 @@ export default function Page() {
         <Octocat
           catColor="#1e293b"
           isPride={true}
-          repository="nekowinston/farbenfroh.io"
+          repository="nekowinston/faerber"
         />
       </div>
       <Faerber />
