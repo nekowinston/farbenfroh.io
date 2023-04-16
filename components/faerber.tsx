@@ -288,7 +288,7 @@ const Faerber: React.FC = (): JSX.Element => {
             Makes your wallpaper fit your favorite colorscheme!
           </h2>
           <p className="prose mx-auto max-w-md text-text">
-            When you spent a lot of time tweaking your OS, you don{"'"}t want to
+            When you have spent a lot of time tweaking your OS, you don{"'"}t want to
             just grab any old wallpaper that might not fit your favorite look.
             Drop it here, and it might just look great!
           </p>
