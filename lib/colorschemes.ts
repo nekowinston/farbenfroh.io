@@ -315,7 +315,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#44415a',
     '#56526e',
   ],
- 'Rosé Pine Dawn': [
+  'Rosé Pine Dawn': [
     '#faf4ed',
     '#fffaf3',
     '#f2e9e1',
@@ -332,7 +332,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#dfdad9',
     '#cecacd',
   ],
-'Everforest Hard Dark': [
+  'Everforest Hard Dark': [
     '#1E2326',
     '#272E33',
     '#2E383C',
@@ -360,7 +360,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#859289',
     '#9DA9A0',
   ],
-'Everforest Hard Light': [
+  'Everforest Hard Light': [
     '#F2EFDF',
     '#FFFBEF',
     '#F8F5E4',
@@ -388,7 +388,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#939F91',
     '#829181',
   ],
-'Everforest Medium Dark': [
+  'Everforest Medium Dark': [
     '#232A2E',
     '#2D353B',
     '#343F44',
@@ -416,7 +416,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#859289',
     '#9DA9A0',
   ],
-'Everforest Medium Light': [
+  'Everforest Medium Light': [
     '#EFEBD4',
     '#FDF6E3',
     '#F4F0D9',
@@ -444,7 +444,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#939F91',
     '#829181',
   ],
-'Everforest Soft Dark': [
+  'Everforest Soft Dark': [
     '#293136',
     '#333C43',
     '#3A464C',
@@ -472,7 +472,7 @@ export const colorSchemePresets: Record<string, string[]> = {
     '#859289',
     '#9DA9A0',
   ],
-'Everforest Soft Light': [
+  'Everforest Soft Light': [
     '#E5DFC5',
     '#F3EAD3',
     '#EAE4CA',
