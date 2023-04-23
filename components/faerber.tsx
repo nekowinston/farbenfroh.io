@@ -288,9 +288,9 @@ const Faerber: React.FC = (): JSX.Element => {
             Makes your wallpaper fit your favorite colorscheme!
           </h2>
           <p className="prose mx-auto max-w-md text-text">
-            When you have spent a lot of time tweaking your OS, you don{"'"}t want to
-            just grab any old wallpaper that might not fit your favorite look.
-            Drop it here, and it might just look great!
+            When you have spent a lot of time tweaking your OS, you don{"'"}t
+            want to just grab any old wallpaper that might not fit your favorite
+            look. Drop it here, and it might just look great!
           </p>
         </div>
         <div className="py-4 text-center">
@@ -375,7 +375,7 @@ const Faerber: React.FC = (): JSX.Element => {
                     </div>
                   ))}
                 </div>
-                <div className="flex flex-col justify-center gap-2 py-2 px-8 md:flex-row md:px-0">
+                <div className="flex flex-col justify-center gap-2 px-8 py-2 md:flex-row md:px-0">
                   <label className="flex items-center" htmlFor="customColorAdd">
                     <Arrow90degUp className="mr-1 h-4 w-4 -translate-y-0.5" />
                     Custom color
