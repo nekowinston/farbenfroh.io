@@ -56,4 +56,13 @@ module.exports = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/faerber',
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },
 }

@@ -283,7 +283,6 @@ const Faerber: React.FC = (): JSX.Element => {
           )}
         </div>
         <div className="pt-8 text-center md:p-0">
-          <h1 className="p-4 font-lobster text-8xl text-pink">faerber</h1>
           <h2 className="my-2 text-2xl text-pink">
             Makes your wallpaper fit your favorite colorscheme!
           </h2>
@@ -411,29 +410,34 @@ const Faerber: React.FC = (): JSX.Element => {
                   Here are some colorscheme presets for you:
                 </p>
                 <div className="m-4 grid grid-cols-2 justify-center gap-3 md:grid-cols-5">
-                  {Object.keys(colorSchemePresets).map((preset) => (
-                    <button
-                      key={preset}
-                      className={cx(
-                        'rounded bg-surface2 p-1 hover:outline hover:outline-pink/60',
-                        {
-                          'outline outline-pink': selPreset.includes(preset),
-                        }
-                      )}
-                      onClick={handlePresetClick}
-                    >
-                      {preset}
-                    </button>
-                  ))}
+                  {Object.keys(colorSchemePresets)
+                    .sort()
+                    .map((preset) => (
+                      <button
+                        key={preset}
+                        className={cx(
+                          'rounded bg-surface2 p-1 hover:outline hover:outline-surface2/60',
+                          {
+                            'outline outline-pink': selPreset.includes(preset),
+                          }
+                        )}
+                        onClick={handlePresetClick}
+                      >
+                        {preset}
+                      </button>
+                    ))}
                 </div>
                 <p className="text-sm text-subtext0">
-                  You can hold <kbd>Shift</kbd> while pressing presets to
-                  combine them.
+                  You can hold{' '}
+                  <span className="text-rosewater">
+                    &#x21E7; <kbd>Shift</kbd>
+                  </span>{' '}
+                  while pressing presets to combine them.
                 </p>
                 <div className="text-sm text-subtext0">
                   <p>Your favorite colorscheme is missing?</p>
                   <p>
-                    How about you{' '}
+                    Feel free to{' '}
                     <a
                       href="https://github.com/nekowinston/farbenfroh.io"
                       className="underline"
@@ -442,7 +446,7 @@ const Faerber: React.FC = (): JSX.Element => {
                     >
                       open a PR/create an issue
                     </a>
-                    ?
+                    .
                   </p>
                 </div>
               </div>
@@ -463,8 +467,8 @@ const Faerber: React.FC = (): JSX.Element => {
                         }
                       >
                         <option value="1976">Delta E 76</option>
-                        <option value="1994t">Delta E 94-T</option>
                         <option value="1994g">Delta E 94-G</option>
+                        <option value="1994t">Delta E 94-T</option>
                         <option value="2000">Delta E 2000</option>
                       </select>
                     </div>
@@ -494,7 +498,7 @@ const Faerber: React.FC = (): JSX.Element => {
                   The color comparison method is how the algorithm calculates
                   the difference between each pixel in your image & the limited
                   colors in your colorscheme. The numbers correspond to the
-                  years the standard were set by the CIE. Newer standards
+                  years the standard were set by the <abbr title="International Commission on Illumination">CIE</abbr>. Newer standards
                   require more computing power, but might give better / more
                   accurate results. More accurate isn{"'"}t always {"'"}better
                   {"'"} - since people like vinyl, and Instagram filters, old
@@ -503,12 +507,6 @@ const Faerber: React.FC = (): JSX.Element => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="p-4 text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
-          a project by{' '}
-          <a href="https://github.com/nekowinston" className="text-blue">
-            winston 🤘
-          </a>
         </div>
       </div>
     </>
