@@ -269,13 +269,10 @@ const Faerber: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <Head>
-        <title>farbenfroh.io :: faerber</title>
-      </Head>
       <div className="relative h-full" onPaste={handlePaste}>
         <div className="fixed z-50 w-full">
           {showWarning && (
-            <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 rounded-md bg-peach p-4 text-xl text-crust shadow-lg">
+            <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 bg-peach p-4 text-xl text-crust shadow-lg">
               <Alert className="h-12 w-12" />
               You have used quite a large image. This may take a while, and your
               browser might freeze, depending on your hardware.
@@ -283,20 +280,19 @@ const Faerber: React.FC = (): JSX.Element => {
           )}
         </div>
         <div className="pt-8 text-center md:p-0">
-          <h1 className="p-4 font-lobster text-8xl text-pink">faerber</h1>
           <h2 className="my-2 text-2xl text-pink">
             Makes your wallpaper fit your favorite colorscheme!
           </h2>
           <p className="prose mx-auto max-w-md text-text">
-            When you have spent a lot of time tweaking your OS, you don{"'"}t want to
-            just grab any old wallpaper that might not fit your favorite look.
-            Drop it here, and it might just look great!
+            When you have spent a lot of time tweaking your OS, you don{"'"}t
+            want to just grab any old wallpaper that might not fit your favorite
+            look. Drop it here, and it might just look great!
           </p>
         </div>
         <div className="py-4 text-center">
           <label
             htmlFor="inputImage"
-            className="m-2 inline-block cursor-pointer rounded bg-surface2 p-2"
+            className="m-2 inline-block cursor-pointer bg-surface2 p-2"
           >
             <input
               type="file"
@@ -336,7 +332,7 @@ const Faerber: React.FC = (): JSX.Element => {
           <div className="py-4 text-center">
             <div
               onClick={() => downloadResult()}
-              className="m-2 inline-block cursor-pointer rounded bg-surface2 p-2"
+              className="m-2 inline-block cursor-pointer bg-surface2 p-2"
             >
               <Save className="mr-2 inline-block h-5 w-5"></Save>
               <span>Save image</span>
@@ -345,10 +341,10 @@ const Faerber: React.FC = (): JSX.Element => {
         )}
         <div>
           <div className="mx-auto max-w-6xl ">
-            <h3 className="mx-auto max-w-fit rounded-t-lg border border-b-0 border-surface1 bg-surface2 px-4 text-center text-xl">
+            <h3 className="mx-auto max-w-fit border border-b-0 border-surface1 bg-surface2 px-4 text-center text-xl">
               Colors to match against:
             </h3>
-            <div className="divide-y divide-dashed divide-surface1 overflow-hidden rounded-xl border border-surface1 bg-mantle shadow-lg">
+            <div className="divide-y divide-dashed divide-surface1 overflow-hidden border border-surface1 bg-mantle shadow-lg">
               <div className="pb-2">
                 <div className="grid max-h-80 grid-cols-4 overflow-y-auto overflow-x-hidden font-mono">
                   {selColors.map((el, i) => (
@@ -358,13 +354,13 @@ const Faerber: React.FC = (): JSX.Element => {
                       style={{ background: `${el}` }}
                     >
                       <span
-                        className="h-6 rounded px-1"
+                        className="h-6 px-1"
                         style={{ color: `${calculateContrastColor(el)}` }}
                       >
                         {el.toUpperCase()}
                       </span>
                       <Trash
-                        className="absolute right-2 h-6 w-6 cursor-pointer rounded p-1 opacity-0 transition-transform hover:scale-125 hover:opacity-100 group-hover:opacity-75"
+                        className="absolute right-2 h-6 w-6 cursor-pointer p-1 opacity-0 transition-transform hover:scale-125 hover:opacity-100 group-hover:opacity-75"
                         style={{ color: `${calculateContrastColor(el)}` }}
                         onClick={() => {
                           const newArr = [...selColors]
@@ -375,7 +371,7 @@ const Faerber: React.FC = (): JSX.Element => {
                     </div>
                   ))}
                 </div>
-                <div className="flex flex-col justify-center gap-2 py-2 px-8 md:flex-row md:px-0">
+                <div className="flex flex-col justify-center gap-2 px-8 py-2 md:flex-row md:px-0">
                   <label className="flex items-center" htmlFor="customColorAdd">
                     <Arrow90degUp className="mr-1 h-4 w-4 -translate-y-0.5" />
                     Custom color
@@ -411,38 +407,42 @@ const Faerber: React.FC = (): JSX.Element => {
                   Here are some colorscheme presets for you:
                 </p>
                 <div className="m-4 grid grid-cols-2 justify-center gap-3 md:grid-cols-5">
-                  {Object.keys(colorSchemePresets).map((preset) => (
-                    <button
-                      key={preset}
-                      className={cx(
-                        'rounded bg-surface2 p-1 hover:outline hover:outline-pink/60',
-                        {
+                  {Object.keys(colorSchemePresets)
+                    .sort()
+                    .map((preset) => (
+                      <button
+                        key={preset}
+                        className={cx('bg-surface2 p-1 hover:outline ', {
                           'outline outline-pink': selPreset.includes(preset),
-                        }
-                      )}
-                      onClick={handlePresetClick}
-                    >
-                      {preset}
-                    </button>
-                  ))}
+                          'hover:outline-surface2/60':
+                            !selPreset.includes(preset),
+                        })}
+                        onClick={handlePresetClick}
+                      >
+                        {preset}
+                      </button>
+                    ))}
                 </div>
                 <p className="text-sm text-subtext0">
-                  You can hold <kbd>Shift</kbd> while pressing presets to
-                  combine them.
+                  You can hold{' '}
+                  <span className="text-rosewater">
+                    &#x21E7; <kbd>Shift</kbd>
+                  </span>{' '}
+                  while pressing presets to combine them.
                 </p>
                 <div className="text-sm text-subtext0">
                   <p>Your favorite colorscheme is missing?</p>
                   <p>
-                    How about you{' '}
+                    Feel free to{' '}
                     <a
                       href="https://github.com/nekowinston/farbenfroh.io"
-                      className="underline"
+                      className="underline hover:text-text"
                       target={'_blank'}
                       rel="noreferrer"
                     >
                       open a PR/create an issue
                     </a>
-                    ?
+                    .
                   </p>
                 </div>
               </div>
@@ -456,15 +456,15 @@ const Faerber: React.FC = (): JSX.Element => {
                       <select
                         id="methodSelector"
                         name="methodSelector"
-                        className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMethod}
                         onChange={(e) =>
                           setSelMethod(e.target.value as DEMethod)
                         }
                       >
                         <option value="1976">Delta E 76</option>
-                        <option value="1994t">Delta E 94-T</option>
                         <option value="1994g">Delta E 94-G</option>
+                        <option value="1994t">Delta E 94-T</option>
                         <option value="2000">Delta E 2000</option>
                       </select>
                     </div>
@@ -475,7 +475,7 @@ const Faerber: React.FC = (): JSX.Element => {
                       <select
                         id="multiThreadingSelector"
                         name="multiThreadingSelector"
-                        className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMulti}
                         onChange={(e) =>
                           setSelMulti(
@@ -494,21 +494,19 @@ const Faerber: React.FC = (): JSX.Element => {
                   The color comparison method is how the algorithm calculates
                   the difference between each pixel in your image & the limited
                   colors in your colorscheme. The numbers correspond to the
-                  years the standard were set by the CIE. Newer standards
-                  require more computing power, but might give better / more
-                  accurate results. More accurate isn{"'"}t always {"'"}better
+                  years the standard were set by the{' '}
+                  <abbr title="International Commission on Illumination">
+                    CIE
+                  </abbr>
+                  . Newer standards require more computing power, but might give
+                  better / more accurate results. More accurate isn{"'"}t always{' '}
+                  {"'"}better
                   {"'"} - since people like vinyl, and Instagram filters, old
                   standards are also included. Because art.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-        <div className="p-4 text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
-          a project by{' '}
-          <a href="https://github.com/nekowinston" className="text-blue">
-            winston 🤘
-          </a>
         </div>
       </div>
     </>

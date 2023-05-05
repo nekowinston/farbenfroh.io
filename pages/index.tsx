@@ -1,31 +1,23 @@
-import Head from 'next/head'
 import Link from 'next/link'
-import React from 'react'
+import React, { ComponentType } from 'react'
+import dynamic from 'next/dynamic'
+import NavBar from '@/components/navbar'
+import { NextSeo } from 'next-seo'
+
+const Faerber: ComponentType = dynamic(() => import('@/components/faerber'), {
+  ssr: false,
+})
 
 const Home: React.FC = (): JSX.Element => {
   return (
     <>
-      <Head>
-        <title>farbenfroh.io</title>
-        <meta name="description" content="colorscheme all the things" />
-      </Head>
-      <div className="index-container text-crust">
-        <div className="index-logo">farbenfroh.io</div>
-        <div className="my-4 text-center">
-          <p className="text-mantle text-lg">/ˈfarbənfroː/</p>
-          <p className="text-mantle text-xs">[adjective]</p>
-          <p className="text-crust text-xl font-bold">full of colour</p>
+      <NextSeo title="faerber" />
+      <div className="max-w-screen overflow-hidden">
+        <NavBar />
+        <div className="m-2 bg-base text-text md:m-4">
+          <Faerber />
         </div>
-        <div className="text-2xl">
-          <span>
-            Check out{' '}
-            <Link href="faerber" className="underline hover:text-cyan-800">
-              faerber
-            </Link>
-            !
-          </span>
-        </div>
-        <div className="absolute bottom-0 m-2 w-full text-center opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
+        <div className="m-2 w-full text-center text-text opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">
           a project by{' '}
           <Link
             href="https://github.com/nekowinston"

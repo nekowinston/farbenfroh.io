@@ -1,10 +1,10 @@
 import Document, {
-  Html,
-  Head,
-  Main,
-  NextScript,
   DocumentContext,
   DocumentInitialProps,
+  Head,
+  Html,
+  Main,
+  NextScript,
 } from 'next/document'
 
 export default class MyDocument extends Document {
@@ -39,18 +39,8 @@ export default class MyDocument extends Document {
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
           <meta name="msapplication-TileColor" content="#603cba" />
           <meta name="theme-color" content="#ffffff" />
-          <link
-            crossOrigin="anonymous"
-            rel="preconnect"
-            href="https://fonts.bunny.net"
-          />
-          <link
-            crossOrigin="anonymous"
-            href="https://fonts.bunny.net/css?family=fira-code:500,700|inter:500,700|lobster:400"
-            rel="stylesheet"
-          />
         </Head>
-        <body className="mocha bg-base text-text">
+        <body className="mocha bg-base text-text selection:bg-pink selection:text-crust">
           <Main />
           <NextScript />
         </body>
