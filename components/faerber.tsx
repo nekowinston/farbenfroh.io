@@ -412,12 +412,11 @@ const Faerber: React.FC = (): JSX.Element => {
                     .map((preset) => (
                       <button
                         key={preset}
-                        className={cx(
-                          'bg-surface2 p-1 hover:outline hover:outline-surface2/60',
-                          {
-                            'outline outline-pink': selPreset.includes(preset),
-                          }
-                        )}
+                        className={cx('bg-surface2 p-1 hover:outline ', {
+                          'outline outline-pink': selPreset.includes(preset),
+                          'hover:outline-surface2/60':
+                            !selPreset.includes(preset),
+                        })}
                         onClick={handlePresetClick}
                       >
                         {preset}
