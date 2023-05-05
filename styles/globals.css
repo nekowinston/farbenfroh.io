@@ -8,6 +8,6 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-pink;
+    @apply bg-pink;
   }
 }

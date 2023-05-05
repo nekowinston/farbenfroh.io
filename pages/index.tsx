@@ -14,7 +14,7 @@ const Home: React.FC = (): JSX.Element => {
       <NextSeo title="faerber" />
       <div className="max-w-screen overflow-hidden">
         <NavBar />
-        <div className="rounded-lg bg-base text-text md:m-4">
+        <div className="m-2 bg-base text-text md:m-4">
           <Faerber />
         </div>
         <div className="m-2 w-full text-center text-text opacity-30 transition ease-linear hover:-translate-y-1 hover:opacity-100">

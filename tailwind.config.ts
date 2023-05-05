@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss'
-const { fontFamily } = require('tailwindcss/defaultTheme')
+import { fontFamily } from 'tailwindcss/defaultTheme'
 
 export default {
   content: [
@@ -9,7 +9,6 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        lobster: ['var(--font-lobster)', 'cursive'],
         sans: ['var(--font-ibm-plex-sans)', ...fontFamily.sans],
         mono: ['var(--font-ibm-plex-mono)', ...fontFamily.mono],
       },

@@ -2,13 +2,8 @@ import type { AppProps } from 'next/app'
 import '../styles/globals.css'
 import { Analytics } from '@vercel/analytics/react'
 import { DefaultSeo } from 'next-seo'
-import { IBM_Plex_Mono, IBM_Plex_Sans, Lobster } from 'next/font/google'
+import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google'
 
-const lobster = Lobster({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-lobster',
-})
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ['latin'],
   weight: ['500', '700'],
@@ -19,7 +14,7 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ['500', '700'],
   variable: '--font-ibm-plex-mono',
 })
-const fonts = [lobster, ibmPlexSans, ibmPlexMono]
+const fonts = [ibmPlexSans, ibmPlexMono]
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (

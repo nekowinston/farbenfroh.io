@@ -269,13 +269,10 @@ const Faerber: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <Head>
-        <title>farbenfroh.io :: faerber</title>
-      </Head>
       <div className="relative h-full" onPaste={handlePaste}>
         <div className="fixed z-50 w-full">
           {showWarning && (
-            <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 rounded-md bg-peach p-4 text-xl text-crust shadow-lg">
+            <div className="top-2 mx-auto mt-8 flex max-w-xl items-center gap-4 bg-peach p-4 text-xl text-crust shadow-lg">
               <Alert className="h-12 w-12" />
               You have used quite a large image. This may take a while, and your
               browser might freeze, depending on your hardware.
@@ -295,7 +292,7 @@ const Faerber: React.FC = (): JSX.Element => {
         <div className="py-4 text-center">
           <label
             htmlFor="inputImage"
-            className="m-2 inline-block cursor-pointer rounded bg-surface2 p-2"
+            className="m-2 inline-block cursor-pointer bg-surface2 p-2"
           >
             <input
               type="file"
@@ -335,7 +332,7 @@ const Faerber: React.FC = (): JSX.Element => {
           <div className="py-4 text-center">
             <div
               onClick={() => downloadResult()}
-              className="m-2 inline-block cursor-pointer rounded bg-surface2 p-2"
+              className="m-2 inline-block cursor-pointer bg-surface2 p-2"
             >
               <Save className="mr-2 inline-block h-5 w-5"></Save>
               <span>Save image</span>
@@ -344,10 +341,10 @@ const Faerber: React.FC = (): JSX.Element => {
         )}
         <div>
           <div className="mx-auto max-w-6xl ">
-            <h3 className="mx-auto max-w-fit rounded-t-lg border border-b-0 border-surface1 bg-surface2 px-4 text-center text-xl">
+            <h3 className="mx-auto max-w-fit border border-b-0 border-surface1 bg-surface2 px-4 text-center text-xl">
               Colors to match against:
             </h3>
-            <div className="divide-y divide-dashed divide-surface1 overflow-hidden rounded-xl border border-surface1 bg-mantle shadow-lg">
+            <div className="divide-y divide-dashed divide-surface1 overflow-hidden border border-surface1 bg-mantle shadow-lg">
               <div className="pb-2">
                 <div className="grid max-h-80 grid-cols-4 overflow-y-auto overflow-x-hidden font-mono">
                   {selColors.map((el, i) => (
@@ -357,13 +354,13 @@ const Faerber: React.FC = (): JSX.Element => {
                       style={{ background: `${el}` }}
                     >
                       <span
-                        className="h-6 rounded px-1"
+                        className="h-6 px-1"
                         style={{ color: `${calculateContrastColor(el)}` }}
                       >
                         {el.toUpperCase()}
                       </span>
                       <Trash
-                        className="absolute right-2 h-6 w-6 cursor-pointer rounded p-1 opacity-0 transition-transform hover:scale-125 hover:opacity-100 group-hover:opacity-75"
+                        className="absolute right-2 h-6 w-6 cursor-pointer p-1 opacity-0 transition-transform hover:scale-125 hover:opacity-100 group-hover:opacity-75"
                         style={{ color: `${calculateContrastColor(el)}` }}
                         onClick={() => {
                           const newArr = [...selColors]
@@ -416,7 +413,7 @@ const Faerber: React.FC = (): JSX.Element => {
                       <button
                         key={preset}
                         className={cx(
-                          'rounded bg-surface2 p-1 hover:outline hover:outline-surface2/60',
+                          'bg-surface2 p-1 hover:outline hover:outline-surface2/60',
                           {
                             'outline outline-pink': selPreset.includes(preset),
                           }
@@ -460,7 +457,7 @@ const Faerber: React.FC = (): JSX.Element => {
                       <select
                         id="methodSelector"
                         name="methodSelector"
-                        className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMethod}
                         onChange={(e) =>
                           setSelMethod(e.target.value as DEMethod)
@@ -479,7 +476,7 @@ const Faerber: React.FC = (): JSX.Element => {
                       <select
                         id="multiThreadingSelector"
                         name="multiThreadingSelector"
-                        className="mt-1 block w-full rounded-md border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border-surface2 bg-surface2 py-2 pl-3 pr-10 text-text focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         defaultValue={selMulti}
                         onChange={(e) =>
                           setSelMulti(
@@ -498,9 +495,13 @@ const Faerber: React.FC = (): JSX.Element => {
                   The color comparison method is how the algorithm calculates
                   the difference between each pixel in your image & the limited
                   colors in your colorscheme. The numbers correspond to the
-                  years the standard were set by the <abbr title="International Commission on Illumination">CIE</abbr>. Newer standards
-                  require more computing power, but might give better / more
-                  accurate results. More accurate isn{"'"}t always {"'"}better
+                  years the standard were set by the{' '}
+                  <abbr title="International Commission on Illumination">
+                    CIE
+                  </abbr>
+                  . Newer standards require more computing power, but might give
+                  better / more accurate results. More accurate isn{"'"}t always{' '}
+                  {"'"}better
                   {"'"} - since people like vinyl, and Instagram filters, old
                   standards are also included. Because art.
                 </p>
