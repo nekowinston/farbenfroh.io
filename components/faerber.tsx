@@ -437,7 +437,7 @@ const Faerber: React.FC = (): JSX.Element => {
                     Feel free to{' '}
                     <a
                       href="https://github.com/nekowinston/farbenfroh.io"
-                      className="underline"
+                      className="underline hover:text-text"
                       target={'_blank'}
                       rel="noreferrer"
                     >
