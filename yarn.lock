@@ -2686,7 +2686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^20.1.0":
   version: 20.1.0
   resolution: "@types/node@npm:20.1.0"
   checksum: c6d9afa9aa78b4b4348c69ece94975be70346b144c278f1395694a10ef919d7db300018101b6f9245e6bdd76674a5327d2d14829092f3d5295e858cff5f22a66
@@ -2697,13 +2697,6 @@ __metadata:
   version: 14.18.33
   resolution: "@types/node@npm:14.18.33"
   checksum: 4e23f95186d8ae1d38c999bc6b46fe94e790da88744b0a3bfeedcbd0d9ffe2cb0ff39e85f43014f6739e5270292c1a1f6f97a1fc606fd573a0c17fda9a1d42de
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^18.16.4":
-  version: 18.16.5
-  resolution: "@types/node@npm:18.16.5"
-  checksum: b6df96a76a7655cd944794197cf63f5269e5034041bc355f4f243cb3f185ad3e1948011b6f0ac66c22434e50bc53a20ec3a9d95ad284f0e3819813d309d1650b
   languageName: node
   linkType: hard
 
@@ -5750,7 +5743,7 @@ __metadata:
     "@svgr/webpack": ^7.0.0
     "@tailwindcss/forms": ^0.5.3
     "@tailwindcss/typography": ^0.5.9
-    "@types/node": ^18.16.4
+    "@types/node": ^20.1.0
     "@types/react": ^18.2.6
     "@vercel/analytics": ^1.0.1
     autoprefixer: ^10.4.14
