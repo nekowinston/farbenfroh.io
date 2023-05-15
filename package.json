@@ -49,7 +49,7 @@
     "@svg-icons/bootstrap": "^1.87.0",
     "@svg-icons/fa-brands": "^1.87.0",
     "@svg-icons/octicons": "^1.87.0",
-    "@svgr/webpack": "^7.0.0",
+    "@svgr/webpack": "^8.0.1",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.9",
     "@types/node": "^18.16.4",
