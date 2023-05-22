@@ -38,7 +38,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.18.6, @babel/core@npm:^7.20.7, @babel/core@npm:^7.21.3":
+"@babel/core@npm:^7.20.7, @babel/core@npm:^7.21.3, @babel/core@npm:^7.21.8":
   version: 7.21.8
   resolution: "@babel/core@npm:7.21.8"
   dependencies:
@@ -61,7 +61,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.18.6, @babel/generator@npm:^7.21.5":
+"@babel/generator@npm:^7.21.5":
   version: 7.21.5
   resolution: "@babel/generator@npm:7.21.5"
   dependencies:
@@ -340,7 +340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.18.6, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.21.5, @babel/parser@npm:^7.21.8":
+"@babel/parser@npm:^7.20.7, @babel/parser@npm:^7.21.5, @babel/parser@npm:^7.21.8":
   version: 7.21.8
   resolution: "@babel/parser@npm:7.21.8"
   bin:
@@ -650,7 +650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-jsx@npm:^7.18.6, @babel/plugin-syntax-jsx@npm:^7.21.4":
+"@babel/plugin-syntax-jsx@npm:^7.21.4":
   version: 7.21.4
   resolution: "@babel/plugin-syntax-jsx@npm:7.21.4"
   dependencies:
@@ -749,7 +749,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-typescript@npm:^7.20.0":
+"@babel/plugin-syntax-typescript@npm:^7.20.0, @babel/plugin-syntax-typescript@npm:^7.21.4":
   version: 7.21.4
   resolution: "@babel/plugin-syntax-typescript@npm:7.21.4"
   dependencies:
@@ -1213,7 +1213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.18.6, @babel/preset-env@npm:^7.20.2":
+"@babel/preset-env@npm:^7.20.2, @babel/preset-env@npm:^7.21.5":
   version: 7.21.5
   resolution: "@babel/preset-env@npm:7.21.5"
   dependencies:
@@ -1330,7 +1330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.18.6, @babel/preset-typescript@npm:^7.21.0":
+"@babel/preset-typescript@npm:^7.21.0, @babel/preset-typescript@npm:^7.21.5":
   version: 7.21.5
   resolution: "@babel/preset-typescript@npm:7.21.5"
   dependencies:
@@ -1381,7 +1381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.18.6, @babel/traverse@npm:^7.20.5, @babel/traverse@npm:^7.21.5":
+"@babel/traverse@npm:^7.20.5, @babel/traverse@npm:^7.21.5":
   version: 7.21.5
   resolution: "@babel/traverse@npm:7.21.5"
   dependencies:
@@ -1399,7 +1399,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.20.0, @babel/types@npm:^7.20.2, @babel/types@npm:^7.20.5, @babel/types@npm:^7.20.7, @babel/types@npm:^7.21.0, @babel/types@npm:^7.21.3, @babel/types@npm:^7.21.4, @babel/types@npm:^7.21.5, @babel/types@npm:^7.4.4, @babel/types@npm:^7.8.3":
+"@babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.20.0, @babel/types@npm:^7.20.5, @babel/types@npm:^7.20.7, @babel/types@npm:^7.21.0, @babel/types@npm:^7.21.3, @babel/types@npm:^7.21.4, @babel/types@npm:^7.21.5, @babel/types@npm:^7.4.4, @babel/types@npm:^7.8.3":
   version: 7.21.5
   resolution: "@babel/types@npm:7.21.5"
   dependencies:
@@ -2146,21 +2146,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/dev@npm:@vercel/remix-run-dev@1.16.0-patch.1":
-  version: 1.16.0-patch.1
-  resolution: "@vercel/remix-run-dev@npm:1.16.0-patch.1"
+"@remix-run/dev@npm:@vercel/remix-run-dev@1.16.1":
+  version: 1.16.1
+  resolution: "@vercel/remix-run-dev@npm:1.16.1"
   dependencies:
-    "@babel/core": ^7.18.6
-    "@babel/generator": ^7.18.6
-    "@babel/parser": ^7.18.6
-    "@babel/plugin-syntax-jsx": ^7.18.6
-    "@babel/plugin-syntax-typescript": ^7.20.0
-    "@babel/preset-env": ^7.18.6
-    "@babel/preset-typescript": ^7.18.6
-    "@babel/traverse": ^7.18.6
-    "@babel/types": ^7.20.2
+    "@babel/core": ^7.21.8
+    "@babel/generator": ^7.21.5
+    "@babel/parser": ^7.21.8
+    "@babel/plugin-syntax-jsx": ^7.21.4
+    "@babel/plugin-syntax-typescript": ^7.21.4
+    "@babel/preset-env": ^7.21.5
+    "@babel/preset-typescript": ^7.21.5
+    "@babel/traverse": ^7.21.5
+    "@babel/types": ^7.21.5
     "@npmcli/package-json": ^2.0.0
-    "@remix-run/server-runtime": 1.16.0
+    "@remix-run/server-runtime": 1.16.1
     "@vanilla-extract/integration": ^6.2.0
     arg: ^5.0.1
     cacache: ^15.0.5
@@ -2203,33 +2203,33 @@ __metadata:
     ws: ^7.4.5
     xdm: ^2.0.0
   peerDependencies:
-    "@remix-run/serve": ^1.16.0
+    "@remix-run/serve": ^1.16.1
   peerDependenciesMeta:
     "@remix-run/serve":
       optional: true
   bin:
     remix: dist/cli.js
-  checksum: d05f1d5fe31faca41cf25d6c1866a3fc2d871667a4a19e7abd24e9cead51f77798a83d61c894821cb0cd0fca158080f0aafc952f541ca2f3558e151245ad28e7
+  checksum: b297d6862a57493e2217fe4602f628dfd456b69330cf2673eb326d23b7bc4e5837148b8b7ffb0eb170086279a3448d076b4d48ce6c4fcbefb5818ea4ac3720a2
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.6.0":
-  version: 1.6.0
-  resolution: "@remix-run/router@npm:1.6.0"
-  checksum: 9f08f20500b2fc9d689c06c3c25504baf2ece861a9f4d0c49ba043ef4040a96b85c15a57a1c11377e64bf78b727ce8fb58b300345642efb05a75d49e4b638344
+"@remix-run/router@npm:1.6.2":
+  version: 1.6.2
+  resolution: "@remix-run/router@npm:1.6.2"
+  checksum: 5969d313bff6ba5c75917910090cebafda84b9d3b4b453fae6b3d60fea9f938078578ffca769c532ab7ce252cd4a207b78d1024d7c727ab80dd572e62fd3b3f2
   languageName: node
   linkType: hard
 
-"@remix-run/server-runtime@npm:1.16.0":
-  version: 1.16.0
-  resolution: "@remix-run/server-runtime@npm:1.16.0"
+"@remix-run/server-runtime@npm:1.16.1":
+  version: 1.16.1
+  resolution: "@remix-run/server-runtime@npm:1.16.1"
   dependencies:
-    "@remix-run/router": 1.6.0
+    "@remix-run/router": 1.6.2
     "@web3-storage/multipart-parser": ^1.0.0
     cookie: ^0.4.1
     set-cookie-parser: ^2.4.8
     source-map: ^0.7.3
-  checksum: c533f075fce49fe2710bef3be050d1121777617aded2b5cf8d2e388e4814f75e8efa8b706db440675f6b5c5dfc63010f903935d813ed521b4ca1c76a6fbf178c
+  checksum: 797b0d839e53d2d0de7259d744beff17b93d9a424253efdd69de7798cb5b0a7fb7334ce3764faa44d2c23f9d65fc59477773e5246e59c81470c6e9c597928314
   languageName: node
   linkType: hard
 
@@ -2876,10 +2876,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/build-utils@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@vercel/build-utils@npm:6.7.2"
-  checksum: 63d28cd088e311b8e8114cf6c5380ccb73e5bc8ba8bb39d7dbe7ec75b74600a3c187811165533ffc140a6ee1ab26207de64a0fe88d9a3f35ae47c0f4cb52142a
+"@vercel/build-utils@npm:6.7.3":
+  version: 6.7.3
+  resolution: "@vercel/build-utils@npm:6.7.3"
+  checksum: 3dfc095fd4ff70b2e91f9687556f3bbc1b1e5ce42d0ad08e90b4d0321d76d30b721cbb2f22d060ffa6a9fbe250cf0a9dce8e099372fa87c14fae7cbd5b18faee
   languageName: node
   linkType: hard
 
@@ -2900,18 +2900,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/gatsby-plugin-vercel-builder@npm:1.3.3":
-  version: 1.3.3
-  resolution: "@vercel/gatsby-plugin-vercel-builder@npm:1.3.3"
+"@vercel/gatsby-plugin-vercel-builder@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@vercel/gatsby-plugin-vercel-builder@npm:1.3.5"
   dependencies:
     "@sinclair/typebox": 0.25.24
-    "@vercel/build-utils": 6.7.2
-    "@vercel/node": 2.14.2
+    "@vercel/build-utils": 6.7.3
+    "@vercel/node": 2.14.3
     "@vercel/routing-utils": 2.2.1
     esbuild: 0.14.47
     etag: 1.8.1
     fs-extra: 11.1.0
-  checksum: b2ca2c28f17b37e2f78cd99638b31eecb195627bf9afc22839222478b5e686dc5716f1e1ec7e0d54204874d12e31d18869605fc9fa12a9c6ac87b4d539c096f5
+  checksum: 5d171691a141ce11b9c152cd1cbee88544ac906cdebfb23ee3b98711ddaf585e66e1439ef4a8b3174f30cedae9f3606361aa9e4259af52edb9b94c5a6f8f7590
   languageName: node
   linkType: hard
 
@@ -2929,10 +2929,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/next@npm:3.8.2":
-  version: 3.8.2
-  resolution: "@vercel/next@npm:3.8.2"
-  checksum: 05fca09c85266fcd98fdb6b2f9dadc86991fd1f74c34becc2dcdd41ea8018955768d953804068c57f77e7fecd062715e0ba5b10f1b260f35dc6b303f4e3c51e4
+"@vercel/next@npm:3.8.5":
+  version: 3.8.5
+  resolution: "@vercel/next@npm:3.8.5"
+  checksum: f05688673964466a87221b63fad0df10e873bca321f48e196c29f91bc6e684bc62ec204a8a3b1f6741290c67263bc4b10ab319f3be0c7770c9cc03d83372f8f9
   languageName: node
   linkType: hard
 
@@ -2957,14 +2957,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/node@npm:2.14.2":
-  version: 2.14.2
-  resolution: "@vercel/node@npm:2.14.2"
+"@vercel/node@npm:2.14.3":
+  version: 2.14.3
+  resolution: "@vercel/node@npm:2.14.3"
   dependencies:
     "@edge-runtime/vm": 2.0.0
     "@types/node": 14.18.33
     "@types/node-fetch": 2.6.3
-    "@vercel/build-utils": 6.7.2
+    "@vercel/build-utils": 6.7.3
     "@vercel/error-utils": 1.0.8
     "@vercel/static-config": 2.0.17
     async-listen: 3.0.0
@@ -2977,7 +2977,7 @@ __metadata:
     ts-node: 10.9.1
     typescript: 4.9.5
     ws: 8.13.0
-  checksum: a2ac70446f043f58adefaf4ffeebe2eb67d6dad6e87ba101a0b0e41bd79037e6d08fa4a24025bd1cf4aa7d254eec76e1fefd4374cc9f796c039c5ac238efe6cc
+  checksum: 51be90cea907979b188506bb6be654c07b3414c19a142a53c00e2a583e6bd87eaabc26a02c79927f19522bb73a783e073fc2f40aa53ad69f97697520230b87c5
   languageName: node
   linkType: hard
 
@@ -2999,18 +2999,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/remix-builder@npm:1.8.8":
-  version: 1.8.8
-  resolution: "@vercel/remix-builder@npm:1.8.8"
+"@vercel/remix-builder@npm:1.8.10":
+  version: 1.8.10
+  resolution: "@vercel/remix-builder@npm:1.8.10"
   dependencies:
-    "@remix-run/dev": "npm:@vercel/remix-run-dev@1.16.0-patch.1"
-    "@vercel/build-utils": 6.7.2
+    "@remix-run/dev": "npm:@vercel/remix-run-dev@1.16.1"
+    "@vercel/build-utils": 6.7.3
     "@vercel/nft": 0.22.5
     "@vercel/static-config": 2.0.17
     path-to-regexp: 6.2.1
     semver: 7.3.8
     ts-morph: 12.0.0
-  checksum: 8a9c0aa188723b22f918918c3a55379f87c4036980636bed982ce8dcd891c0b6444fef57d0fc1bf91a7132a5d16416d27fc4be41a2c7a2bc59c9fb34c1857b60
+  checksum: 1f6c5d219c9b7ef046476a8ddd2fc8c5a08f97c2c360134a654813ad06f07d197b284bbd8a6b352b23190912e6b3481ee330fc8c9186511f514d322fdde72b35
   languageName: node
   linkType: hard
 
@@ -3034,13 +3034,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/static-build@npm:1.3.30":
-  version: 1.3.30
-  resolution: "@vercel/static-build@npm:1.3.30"
+"@vercel/static-build@npm:1.3.32":
+  version: 1.3.32
+  resolution: "@vercel/static-build@npm:1.3.32"
   dependencies:
     "@vercel/gatsby-plugin-vercel-analytics": 1.0.10
-    "@vercel/gatsby-plugin-vercel-builder": 1.3.3
-  checksum: ff05ab851ff337f071c5a02883f572e86e81d9244f4966a15dc59293abf4017b84008f7f5453409cf91d08d1f64cfd70d2bc6fe89ddd6dd0d3fdb927c3d6ed90
+    "@vercel/gatsby-plugin-vercel-builder": 1.3.5
+  checksum: 2b58115bb6f2c3548890fe275b6515cda60804a31777238a44ab2c3de48f8c095355dcdaf650a22aa03ef9b5f7bd1aa8db1903087c05f0a2ae0a8faf5d12230c
   languageName: node
   linkType: hard
 
@@ -5784,7 +5784,7 @@ __metadata:
     tailwindcss: ^3.3.2
     typescript: ^5.0.4
     usehooks-ts: ^2.9.1
-    vercel: ^29.3.0
+    vercel: ^29.3.6
   languageName: unknown
   linkType: soft
 
@@ -11392,24 +11392,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vercel@npm:^29.3.0":
-  version: 29.3.0
-  resolution: "vercel@npm:29.3.0"
+"vercel@npm:^29.3.6":
+  version: 29.3.6
+  resolution: "vercel@npm:29.3.6"
   dependencies:
-    "@vercel/build-utils": 6.7.2
+    "@vercel/build-utils": 6.7.3
     "@vercel/go": 2.5.1
     "@vercel/hydrogen": 0.0.64
-    "@vercel/next": 3.8.2
-    "@vercel/node": 2.14.2
+    "@vercel/next": 3.8.5
+    "@vercel/node": 2.14.3
     "@vercel/python": 3.1.60
     "@vercel/redwood": 1.1.15
-    "@vercel/remix-builder": 1.8.8
+    "@vercel/remix-builder": 1.8.10
     "@vercel/ruby": 1.3.76
-    "@vercel/static-build": 1.3.30
+    "@vercel/static-build": 1.3.32
   bin:
     vc: dist/index.js
     vercel: dist/index.js
-  checksum: 821d52ccdfced526a75afe47552c58d26201a6b401e2632fc6c5e47d3b3813a4726498fdc84a717f560eb5b5e1c61d02771e99b30c08355636b640d91283a0b6
+  checksum: b6731eb523a71fb20fecd80edd465ad9a6e7a23049f4c4f253c88c5467b7c97cc2dc22a344b6d5bb793913a2e87268cc07c2fae1bd23d89ded2c5670a2575804
   languageName: node
   linkType: hard
 
