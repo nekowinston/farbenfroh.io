@@ -2425,15 +2425,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:^1.7.14":
-  version: 1.7.14
-  resolution: "@headlessui/react@npm:1.7.14"
+"@headlessui/react@npm:^1.7.15":
+  version: 1.7.15
+  resolution: "@headlessui/react@npm:1.7.15"
   dependencies:
     client-only: ^0.0.1
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
-  checksum: 9122114d7a618877a8da2ada000422ce82e6af47195e414076fa5cf45687709479eb30b0df414eed52079be6e5904151bc92e4acfafbdde2592c608f015c490e
+  checksum: f2d11d58499ddf1362a40d84d92b7db932adaccc3596f44f1eead642258280f124497f2b329cee6e04801818bb2e66c42d752ee05f40f8b5239c2f692128e568
   languageName: node
   linkType: hard
 
@@ -6385,7 +6385,7 @@ __metadata:
   resolution: "farbenfroh.io@workspace:."
   dependencies:
     "@catppuccin/tailwindcss": ^0.1.1
-    "@headlessui/react": ^1.7.14
+    "@headlessui/react": ^1.7.15
     "@heroicons/react": ^2.0.17
     "@svg-icons/bootstrap": ^1.87.0
     "@svg-icons/fa-brands": ^1.87.0
