@@ -33,7 +33,7 @@
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {
-    "@headlessui/react": "^1.7.14",
+    "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.17",
     "@vercel/analytics": "^1.0.1",
     "classnames": "^2.3.2",
