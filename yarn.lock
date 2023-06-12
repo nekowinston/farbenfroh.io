@@ -2444,12 +2444,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@heroicons/react@npm:^2.0.17":
-  version: 2.0.17
-  resolution: "@heroicons/react@npm:2.0.17"
+"@heroicons/react@npm:^2.0.18":
+  version: 2.0.18
+  resolution: "@heroicons/react@npm:2.0.18"
   peerDependencies:
     react: ">= 16"
-  checksum: 31677c9b95de4ea92efa205c7a803c33003d3203b0cebf9ca74522485e5351caff7070cbd898885bf050f181682cab8d4815cbef0e7624c56d3312cdf50d2cb9
+  checksum: 597e8668818623d568a302e343ef06b69f62ce297c14b88c2ebbfed0c0f00cd85ec44fae33ec8a249931b4e7dcf145743ae3198095a9f4682108de5155f5f4c3
   languageName: node
   linkType: hard
 
@@ -2577,12 +2577,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:13.4.4":
-  version: 13.4.4
-  resolution: "@next/eslint-plugin-next@npm:13.4.4"
+"@next/eslint-plugin-next@npm:13.4.5":
+  version: 13.4.5
+  resolution: "@next/eslint-plugin-next@npm:13.4.5"
   dependencies:
     glob: 7.1.7
-  checksum: 0a14780aed31d5faa6fa4b0a28f1ee7852d5ed5ed2dad166f05b2ed614bd1802fa033d7b313bcfb053b523f708c379052081069802b087f8ce22c787f361621a
+  checksum: cf41158026c6dac8673346f9580875f0a8c77ad2d98b3f62ff66e28fa065aac8558f24276d8f2af93102375dfc2784b3731f9aa4357a817e970db154e0f16b2b
   languageName: node
   linkType: hard
 
@@ -3297,10 +3297,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.16.4":
-  version: 18.16.5
-  resolution: "@types/node@npm:18.16.5"
-  checksum: b6df96a76a7655cd944794197cf63f5269e5034041bc355f4f243cb3f185ad3e1948011b6f0ac66c22434e50bc53a20ec3a9d95ad284f0e3819813d309d1650b
+"@types/node@npm:^20.3.0":
+  version: 20.3.0
+  resolution: "@types/node@npm:20.3.0"
+  checksum: 613e878174febc0104dae210088645cbb5096a19ae5fdf57fbc06fa6ef71755b839858c2b313fb8c1df8b7c6660e1b5f7a64db2126af9d47d1d9238e2bc0a86d
   languageName: node
   linkType: hard
 
@@ -3311,14 +3311,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.2.11":
-  version: 18.2.11
-  resolution: "@types/react@npm:18.2.11"
+"@types/react@npm:^18.2.12":
+  version: 18.2.12
+  resolution: "@types/react@npm:18.2.12"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 3dcc326ea87468a06079b6c3a9e0f9a98a8438526aba81d29820954e2cb343b6beb8ca3d6a212878797a909fbd3199d07a4d819cd3efbbdba8c22039c06f1ed8
+  checksum: ad85a7eadaf1b35cfeee9f715b39311420ff46d46e0650377d918b3f888c2e47416037da4a765e1dccd3d1916abd54c105a3bee803c971ba56c955a7768ce976
   languageName: node
   linkType: hard
 
@@ -5920,11 +5920,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:^13.4.4":
-  version: 13.4.4
-  resolution: "eslint-config-next@npm:13.4.4"
+"eslint-config-next@npm:^13.4.5":
+  version: 13.4.5
+  resolution: "eslint-config-next@npm:13.4.5"
   dependencies:
-    "@next/eslint-plugin-next": 13.4.4
+    "@next/eslint-plugin-next": 13.4.5
     "@rushstack/eslint-patch": ^1.1.3
     "@typescript-eslint/parser": ^5.42.0
     eslint-import-resolver-node: ^0.3.6
@@ -5939,7 +5939,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 8f35474e3222d7c83966a716ed9bc5973643677da790596939c9c5a36216d01aae55027d0c14a6a4ba88e632f0e48129a9f05370540c6b9e07d4737a49b02d8c
+  checksum: 71647757dfeaa9aa67ed60c9a2a764eb323cee18966df606b37900eeca8759504a29c5b02941264a1a8f9f67293107a77a856d4253acdafd245b357ff6873b02
   languageName: node
   linkType: hard
 
@@ -6396,27 +6396,27 @@ __metadata:
   dependencies:
     "@catppuccin/tailwindcss": ^0.1.1
     "@headlessui/react": ^1.7.15
-    "@heroicons/react": ^2.0.17
+    "@heroicons/react": ^2.0.18
     "@svg-icons/bootstrap": ^1.87.0
     "@svg-icons/fa-brands": ^1.87.0
     "@svg-icons/octicons": ^1.87.0
     "@svgr/webpack": ^8.0.1
     "@tailwindcss/forms": ^0.5.3
     "@tailwindcss/typography": ^0.5.9
-    "@types/node": ^18.16.4
-    "@types/react": ^18.2.11
+    "@types/node": ^20.3.0
+    "@types/react": ^18.2.12
     "@vercel/analytics": ^1.0.1
     autoprefixer: ^10.4.14
     classnames: ^2.3.2
     comlink: ^4.4.1
     eslint: ^8.42.0
-    eslint-config-next: ^13.4.4
+    eslint-config-next: ^13.4.5
     eslint-config-prettier: ^8.8.0
     husky: ^8.0.3
     lint-staged: ^13.2.2
     next: ^13.4.5
     next-seo: ^6.0.0
-    postcss: ^8.4.23
+    postcss: ^8.4.24
     prettier: ^2.8.8
     prettier-plugin-tailwindcss: ^0.3.0
     react: 18.2.0
@@ -10026,6 +10026,17 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
   checksum: 8bb9d1b2ea6e694f8987d4f18c94617971b2b8d141602725fedcc2222fdc413b776a6e1b969a25d627d7b2681ca5aabb56f59e727ef94072e1b6ac8412105a2f
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.24":
+  version: 8.4.24
+  resolution: "postcss@npm:8.4.24"
+  dependencies:
+    nanoid: ^3.3.6
+    picocolors: ^1.0.0
+    source-map-js: ^1.0.2
+  checksum: 814e2126dacfea313588eda09cc99a9b4c26ec55c059188aa7a916d20d26d483483106dc5ff9e560731b59f45c5bb91b945dfadc670aed875cc90ddbbf4e787d
   languageName: node
   linkType: hard
 

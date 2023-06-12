@@ -5,6 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -26,14 +27,19 @@
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
+            # rust
             (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
             binaryen
-            nodejs-18_x
             openssl
             pkg-config
             wasm-bindgen-cli
             wasm-pack
-            yarn
+
+            # node
+            nodejs_20
+            (pkgs.yarn.override {
+              nodejs = nodejs_20;
+            })
           ];
           shellHook = ''
             ${self.checks.${system}.pre-commit-check.shellHook}

@@ -31,7 +31,7 @@ jobs:
         with:
           components: clippy, rustfmt
           targets: wasm32-unknown-unknown
-          toolchain: nightly-2023-03-10
+          toolchain: nightly-2023-06-11
 
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'yarn'
 
       - name: Pull Vercel Environment Information

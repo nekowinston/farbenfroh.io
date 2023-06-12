@@ -1,6 +1,6 @@
 [toolchain]
 # remember to update in GitHub Actions workflow file
-channel = "nightly-2023-03-10"
+channel = "nightly-2023-06-11"
 targets = ["wasm32-unknown-unknown"]
 profile = "minimal"
 components = ["clippy", "rustfmt", "rust-src"]
