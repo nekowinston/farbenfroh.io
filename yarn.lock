@@ -2003,20 +2003,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@catppuccin/palette@npm:0.1.5":
-  version: 0.1.5
-  resolution: "@catppuccin/palette@npm:0.1.5"
-  checksum: b6be48610e05f57019649baa7f9a69cdba6719e1867f51aebbe534ee28524a5f6141a888b82a6753a3afcb2a3ec3cbc79d66765908df04d8fa8aa4d60ababbcb
-  languageName: node
-  linkType: hard
-
-"@catppuccin/tailwindcss@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@catppuccin/tailwindcss@npm:0.1.1"
-  dependencies:
-    "@catppuccin/palette": 0.1.5
-    tailwindcss: ^3.0.24
-  checksum: 9f0b6cb8a70830d75548b778f538b4a804d1ff3dcd14aab9166308e87ff8037283fa52dd886fa9f11763b39a7e5de7723f8a10e2b67da2c275750ad303948e6c
+"@catppuccin/tailwindcss@npm:^0.1.6":
+  version: 0.1.6
+  resolution: "@catppuccin/tailwindcss@npm:0.1.6"
+  peerDependencies:
+    tailwindcss: ">=3.0.0"
+  checksum: ebe58218abf33a6786bd0227b94c25ae0292ecc8f267c3d34947aae4662d221837ee5389f6023cc0aae478f9a9c817549993ba66058090dfeab0ae5da090e981
   languageName: node
   linkType: hard
 
@@ -6419,7 +6411,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "farbenfroh.io@workspace:."
   dependencies:
-    "@catppuccin/tailwindcss": ^0.1.1
+    "@catppuccin/tailwindcss": ^0.1.6
     "@headlessui/react": ^1.7.15
     "@heroicons/react": ^2.0.18
     "@svg-icons/bootstrap": ^1.87.0
@@ -11393,7 +11385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.0.24, tailwindcss@npm:^3.3.2":
+"tailwindcss@npm:^3.3.2":
   version: 3.3.2
   resolution: "tailwindcss@npm:3.3.2"
   dependencies:
