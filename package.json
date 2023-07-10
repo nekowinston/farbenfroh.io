@@ -45,7 +45,7 @@
     "usehooks-ts": "^2.9.1"
   },
   "devDependencies": {
-    "@catppuccin/tailwindcss": "^0.1.1",
+    "@catppuccin/tailwindcss": "^0.1.6",
     "@svg-icons/bootstrap": "^1.87.0",
     "@svg-icons/fa-brands": "^1.87.0",
     "@svg-icons/octicons": "^1.87.0",
